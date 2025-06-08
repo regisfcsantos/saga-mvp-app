@@ -23,17 +23,27 @@ const notificationService = {
         await Notification.create({ user_id: creatorId, message, link });
     },
 
-    // Notifica o atleta que sua prova foi avaliada
     notifySubmissionGraded: async (athleteId, competitionName, competitionId) => {
         const message = `Sua prova para "${competitionName}" foi avaliada! Confira sua nota no ranking.`;
-        const link = `/competicoes/${competitionId}`; // O ideal é linkar direto para o ranking com a nota dele
+        const link = `/competicoes/${competitionId}`;
         await Notification.create({ user_id: athleteId, message, link });
     },
 
-    // Notifica um usuário que seu pedido para ser Box foi aprovado
+    notifyNewBoxRequest: async (adminId, requesterUsername) => {
+        const message = `O usuário "${requesterUsername}" solicitou para se tornar um Box.`;
+        const link = `/admin/aprovar-boxes`;
+        await Notification.create({ user_id: adminId, message, link });
+    },
+
+    notifyBoxRejected: async (userId) => {
+        const message = `Sua solicitação para se tornar um Box foi recusada. Entre em contato para mais detalhes.`;
+        const link = `/perfil`;
+        await Notification.create({ user_id: userId, message, link });
+    },
+
     notifyBoxApproved: async (boxId) => {
         const message = `Parabéns! Sua solicitação para se tornar um Box foi aprovada. Você já pode criar competições.`;
-        const link = `/perfil`;
+        const link = `/contato`;
         await Notification.create({ user_id: boxId, message, link });
     }
 };

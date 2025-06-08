@@ -123,7 +123,13 @@ const User = {
         const { rows } = await db.query(query);
         return rows;
     },
-    
+
+    findAllAdmins: async () => {
+        const query = `SELECT id FROM users WHERE role = 'admin'`;
+        const { rows } = await db.query(query);
+        return rows;
+    },
+
     searchByUsername: async (searchTerm, limit = 10) => {
         // ILIKE faz uma busca case-insensitive. '%' é um coringa.
         // Selecionamos apenas os campos necessários para a lista de resultados.

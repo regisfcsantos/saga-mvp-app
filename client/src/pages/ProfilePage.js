@@ -7,12 +7,16 @@ import './ProfilePage.css';
 
 const ProfilePage = () => {
     const { username } = useParams(); // Pega o :username da URL, se existir
-    const { currentUser, isLoading: authLoading } = useAuth(); // Usuário logado
+    const { currentUser, isLoading: authLoading, setCurrentUser } = useAuth(); // Usuário logado
 
     const [viewedUser, setViewedUser] = useState(null); // O usuário do perfil que estamos vendo
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
 
+    const [requestBoxError, setRequestBoxError] = useState('');
+    const [requestBoxSuccess, setRequestBoxSuccess] = useState('');
+    const [myCompetitions, setMyCompetitions] = useState([]);
+    const [myInscriptions, setMyInscriptions] = useState([]);
     // Determina se estamos vendo nosso próprio perfil
     const isMyProfile = !username || (currentUser && currentUser.username === username);
 
@@ -52,6 +56,27 @@ const ProfilePage = () => {
 
     }, [username, currentUser, isMyProfile, authLoading]); // Roda quando qualquer um destes mudar
 
+    const handleRequestBoxRole = async () => {
+        setRequestBoxError('');
+        setRequestBoxSuccess('');
+        if (!window.confirm("Você tem certeza que quer solicitar para se tornar um Box? Seu perfil será enviado para análise.")) {
+            return;
+        }
+        try {
+            const response = await axios.put('/api/users/me/request-box-role');
+            // Atualiza o estado local do usuário para refletir a mudança imediatamente
+            setCurrentUser(prevUser => ({
+                ...prevUser,
+                role: 'box',
+                is_box_approved: false
+            }));
+            setRequestBoxSuccess(response.data.message || 'Solicitação enviada com sucesso! Aguarde a aprovação do administrador.');
+        } catch (err) {
+            console.error("Erro ao solicitar ser Box:", err);
+            setRequestBoxError(err.response?.data?.message || 'Falha ao enviar solicitação.');
+        }
+    };
+
     if (isLoading || authLoading) return <div className="profile-page-container">Carregando perfil...</div>;
     if (error) return <div className="profile-page-container" style={{color: 'red'}}>Erro: {error}</div>;
     if (!viewedUser) return <div className="profile-page-container">Usuário não encontrado.</div>;
@@ -77,9 +102,13 @@ const ProfilePage = () => {
                 <div style={{margin: '20px 0'}}>
                     <Link to="/editar-perfil" className="edit-profile-button">Editar Perfil</Link>
                     {currentUser.role === 'atleta' && (
-                        <button onClick={() => alert('Lógica de solicitar ser box a ser implementada aqui se necessário.')} className="request-box-button" style={{marginLeft: '10px'}}>
-                            Solicitar ser um Box
-                        </button>
+                        <>
+                            <button onClick={handleRequestBoxRole} className="request-box-button" style={{marginLeft: '10px'}}>
+                                Solicitar ser um Box
+                            </button>
+                            {requestBoxError && <p style={{color: 'red', marginTop: '10px'}}>{requestBoxError}</p>}
+                            {requestBoxSuccess && <p style={{color: 'green', marginTop: '10px'}}>{requestBoxSuccess}</p>}
+                        </>
                     )}
                 </div>
             )}

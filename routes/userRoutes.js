@@ -3,6 +3,7 @@ const router = require('express').Router();
 const User = require('../models/userModel'); // Importa o modelo de usuário que acabamos de preencher
 const Competition = require('../models/competitionModel');
 const Inscription = require('../models/inscriptionModel');
+const notificationService = require('../services/notificationService');
 const { ensureAuthenticated } = require('../middleware/authMiddleware'); // Importa o middleware para proteger rotas
 
 // ROTA: Pegar perfil do usuário logado (privado)
@@ -94,6 +95,25 @@ router.post('/me/request-box-role', ensureAuthenticated, async (req, res) => {
         console.error("Erro ao solicitar perfil de Box:", err);
         res.status(500).json({ message: 'Erro interno ao processar sua solicitação.' });
     }
+});
+
+router.put('/me/request-box-role', ensureAuthenticated, async (req, res) => {
+    try {
+        const user = await User.requestBoxRole(req.user.id);
+        if (!user) { /* ... */ }
+
+        // <<--- GERAR NOTIFICAÇÃO PARA TODOS OS ADMINS ---<<<
+        try {
+            const admins = await User.findAllAdmins();
+            for (const admin of admins) {
+                await notificationService.notifyNewBoxRequest(admin.id, req.user.username);
+            }
+        } catch (notificationError) {
+            console.error("Falha ao criar notificação de solicitação de Box:", notificationError);
+        }
+
+        res.json({ message: "Solicitação enviada com sucesso! Aguarde a aprovação.", user });
+    } catch (err) { /* ... */ }
 });
 
 // ACESSO: GET /api/users/search?q=nome_do_usuario

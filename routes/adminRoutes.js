@@ -37,7 +37,7 @@ router.put('/approve-box/:userId', async (req, res) => {
         } catch (notificationError) {
             console.error("Falha ao criar notificação de aprovação de Box:", notificationError);
         }
-        
+
         res.json({ message: "Usuário aprovado como Box com sucesso!", user: approvedUser });
     } catch (err) {
         console.error("Erro ao aprovar Box:", err);
@@ -54,7 +54,12 @@ router.put('/reject-box/:userId', async (req, res) => {
         if (!rejectedUser) {
             return res.status(404).json({ message: "Usuário não encontrado ou não é um Box pendente para rejeição." });
         }
-        // TODO: Notificar o usuário que sua solicitação foi rejeitada (funcionalidade futura)
+        try {
+            await notificationService.notifyBoxRejected(userId);
+        } catch (notificationError) {
+            console.error("Falha ao criar notificação de recusa de Box:", notificationError);
+        }
+
         res.json({ message: "Solicitação de Box rejeitada. Usuário revertido para atleta.", user: rejectedUser });
     } catch (err) {
         console.error("Erro ao rejeitar solicitação de Box:", err);

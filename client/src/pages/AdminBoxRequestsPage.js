@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
+import { Link } from 'react-router-dom';
 // import './AdminBoxRequestsPage.css'; // Crie este arquivo para estilos depois
 
 const adminPageStyles = {
@@ -58,14 +59,15 @@ const AdminBoxRequestsPage = () => {
     };
 
     const handleReject = async (userId) => {
-        setActionMessage('');
+        if (!window.confirm("Tem certeza que quer recusar esta solicitação? O usuário voltará a ser um atleta.")) {
+            return;
+        }
         try {
-            const response = await axios.put(`/api/admin/reject-box/${userId}`);
-            setActionMessage(response.data.message || 'Solicitação rejeitada com sucesso!');
-            fetchPendingRequests(); // Atualiza a lista após a ação
-        } catch (err) {
-            console.error("Erro ao rejeitar solicitação:", err);
-            setActionMessage(`Falha ao rejeitar: ${err.response?.data?.message || 'Erro desconhecido.'}`);
+            await axios.put(`/api/admin/reject-box/${userId}`);
+            alert('Solicitação recusada com sucesso.');
+            fetchPendingRequests(); // Recarrega a lista
+        } catch (error) {
+            alert(`Erro ao recusar solicitação: ${error.response?.data?.message || 'Erro desconhecido'}`);
         }
     };
 
@@ -84,7 +86,6 @@ const AdminBoxRequestsPage = () => {
     return (
         <div style={adminPageStyles.container}>
             <h1 style={adminPageStyles.title}>Aprovar Solicitações de Box</h1>
-            // Correção em AdminBoxRequestsPage.js
             {actionMessage && (
                 <p style={actionMessage.includes('sucesso') ? adminPageStyles.successMessage : adminPageStyles.errorMessage}>
                     {actionMessage}
@@ -108,7 +109,10 @@ const AdminBoxRequestsPage = () => {
                         {pendingRequests.map(user => (
                             <tr key={user.id}>
                                 <td style={adminPageStyles.td}>{user.id}</td>
-                                <td style={adminPageStyles.td}>{user.username}</td>
+                                <td style={adminPageStyles.td}><Link to={`/perfil/${user.username}`} target="_blank" rel="noopener noreferrer" style={{fontWeight: 'bold'}}>
+                                    {user.username}
+                                </Link>
+                                </td>
                                 <td style={adminPageStyles.td}>{user.email}</td>
                                 <td style={adminPageStyles.td}>{new Date(user.created_at).toLocaleDateString()}</td>
                                 <td style={adminPageStyles.td}>
