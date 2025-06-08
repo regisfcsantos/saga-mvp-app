@@ -1,0 +1,65 @@
+/* client/src/components/Searchbar.css */
+.search-container {
+    position: relative; /* Necessário para posicionar a lista de resultados */
+    width: 300px; /* Largura da barra de busca */
+}
+
+.search-input {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 20px; /* Bordas arredondadas */
+    border: 1px solid #555;
+    background-color: #444;
+    color: white;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.search-input::placeholder {
+    color: #999;
+}
+
+.search-input:focus {
+    background-color: #555;
+    border-color: #007bff;
+}
+
+.search-results-dropdown {
+    position: absolute;
+    top: 110%; /* Um pouco abaixo da barra de busca */
+    left: 0;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1020;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #333;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover {
+    background-color: #f8f9fa;
+}
+
+.search-result-photo {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+}

@@ -1,0 +1,113 @@
+/* client/src/pages/AnalyzeSubmissionsPage.css */
+.analyze-page-container {
+    padding: 20px;
+    max-width: 900px;
+    margin: 30px auto;
+    background-color: #fff;
+    border-radius: 8px;
+}
+
+.analyze-page-title {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.submission-item-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #fdfdfd;
+}
+
+.submission-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.submission-header .athlete-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.submission-header .athlete-photo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.submission-header h3 {
+    margin: 0;
+    font-size: 1.2em;
+}
+
+.submission-date {
+    font-size: 0.9em;
+    color: #666;
+}
+
+.submission-video-link {
+    margin: 15px 0;
+}
+
+.submission-video-link a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+    word-break: break-all;
+}
+.submission-video-link a:hover {
+    text-decoration: underline;
+}
+
+.submission-comments {
+    font-style: italic;
+    color: #555;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 15px 0;
+}
+
+.evaluation-form {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.evaluation-form label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.evaluation-form input,
+.evaluation-form textarea {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+}
+.evaluation-form input[type="number"] {
+    max-width: 100px;
+}
+
+.evaluation-form .save-grade-button {
+    padding: 8px 15px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.graded-feedback {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #e9f5f3;
+    border-left: 4px solid #00796b;
+}

@@ -1,0 +1,68 @@
+/* client/src/components/NotificationsDropdown.css */
+.notifications-dropdown {
+    position: absolute;
+    top: 60px; /* Ajuste conforme a altura da sua Navbar */
+    right: 20px;
+    width: 350px;
+    max-height: 400px;
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1010; /* Acima da navbar */
+}
+
+.notifications-header {
+    padding: 10px 15px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notifications-header h4 {
+    margin: 0;
+}
+
+.mark-all-read-btn {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    font-size: 0.8em;
+}
+
+.notification-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.notification-item {
+    display: block;
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    text-decoration: none;
+    color: #333;
+    font-size: 0.9em;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-item.unread {
+    background-color: #eaf2ff; /* Fundo azul claro para não lidas */
+    font-weight: bold;
+}
+
+.notification-item:hover {
+    background-color: #f8f9fa;
+}
+
+.no-notifications {
+    padding: 20px;
+    text-align: center;
+    color: #777;
+}

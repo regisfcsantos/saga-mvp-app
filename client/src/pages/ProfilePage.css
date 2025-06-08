@@ -1,0 +1,164 @@
+/* client/src/pages/ProfilePage.css */
+.profile-page-container {
+    padding: 20px;
+    text-align: center;
+    max-width: 900px;
+    margin: 20px auto; /* Centraliza e dá espaço do header */
+    background-color: #fff; /* Adicionando um fundo branco para a área do perfil */
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.profile-page-container h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.profile-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 20px;
+    border: 3px solid #eee;
+}
+
+.profile-page-container p {
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #444;
+    line-height: 1.6;
+}
+
+.profile-page-container p strong {
+    color: #222;
+}
+
+.profile-section-title {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    font-size: 1.3em; /* Aumentei um pouco */
+    font-weight: 600; /* Deixei mais forte */
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.profile-section-title h3 { /* Para o título dentro da seção */
+    margin-bottom: 10px;
+    font-size: 1.1em; /* Relativo ao pai */
+}
+
+.edit-profile-button {
+    display: inline-block;
+    margin-top: 25px; /* Aumentei um pouco a margem */
+    padding: 12px 20px; /* Aumentei um pouco o padding */
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.2s ease;
+}
+
+.edit-profile-button:hover {
+    background-color: #0056b3;
+}
+
+.request-box-button { /* Estilo para o botão "Solicitar ser um Box" */
+    padding: 8px 15px;
+    font-size: 14px;
+    background-color: #28a745; /* Verde */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.request-box-button:hover {
+    background-color: #218838;
+}
+
+/* client/src/pages/ProfilePage.css */
+
+.profile-section {
+    width: 100%;
+    text-align: left;
+}
+
+.my-competitions-table {
+    width: 100%;
+    border-collapse: collapse; /* Une as bordas das células */
+    margin-top: 20px;
+}
+
+.my-competitions-table th,
+.my-competitions-table td {
+    border: 1px solid #e0e0e0;
+    padding: 12px 15px;
+    text-align: left;
+    vertical-align: middle; /* Centraliza o conteúdo verticalmente na célula */
+}
+
+.my-competitions-table th {
+    background-color: #f8f9fa; /* Fundo cinza claro para o cabeçalho */
+    font-weight: 600;
+}
+
+/* As classes para .status-badge e .competition-item-actions que já tínhamos continuam válidas e funcionarão aqui */
+
+.status-badge {
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    color: white;
+    text-transform: capitalize;
+    white-space: nowrap;
+}
+
+.status-rascunho { background-color: #f0ad4e; }
+.status-publicada { background-color: #28a745; }
+
+.competition-item-actions {
+    display: flex;
+    flex-wrap: nowrap; /* Garante que os botões não quebrem a linha */
+    gap: 8px;
+}
+
+.competition-item-actions .action-button {
+    padding: 6px 12px;
+    text-decoration: none;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9em;
+    white-space: nowrap;
+    transition: opacity 0.2s ease;
+}
+
+.competition-item-actions .action-button:hover {
+    opacity: 0.85;
+}
+
+/* Cores dos botões */
+.action-button.view { background-color: #17a2b8; }
+.action-button.manage { background-color: #ffc107; color: #212529; }
+.action-button.edit { background-color: #007bff; }
+.action-button.delete { background-color: #dc3545; }
+.action-button.analyse { background-color: #5bc0de;}
+
+/* --- FIM DO BLOCO DE ESTILOS PARA A TABELA DE COMPETIÇÕES --- */
+
+/* Adicione estas classes ao seu ProfilePage.css */
+.status-pendente_pagamento, .status-pagamento_em_revisao {
+    background-color: #f0ad4e; /* Laranja */
+}
+.status-confirmada {
+    background-color: #28a745; /* Verde */
+}
+.status-cancelada {
+    background-color: #6c757d; /* Cinza */
+}

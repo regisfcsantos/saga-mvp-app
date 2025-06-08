@@ -1,0 +1,83 @@
+/* client/src/pages/InscriptionManagementPage.css */
+.manage-inscriptions-container {
+    padding: 20px;
+    max-width: 1000px;
+    margin: 30px auto;
+    background-color: #fff;
+    border-radius: 8px;
+}
+
+.manage-inscriptions-title {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.inscriptions-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.inscriptions-table th,
+.inscriptions-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.inscriptions-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.inscriptions-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.athlete-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.athlete-photo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.status-badge {
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    color: white;
+}
+.status-pendente_pagamento, .status-pagamento_em_revisao {
+    background-color: #ffa000; /* Laranja */
+}
+.status-confirmada {
+    background-color: #28a745; /* Verde */
+}
+.status-cancelada {
+    background-color: #6c757d; /* Cinza */
+}
+
+.action-button {
+    padding: 6px 12px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    color: white;
+    transition: background-color 0.2s ease;
+}
+.action-button.confirm {
+    background-color: #28a745;
+}
+.action-button.confirm:hover {
+    background-color: #218838;
+}
+.action-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
