@@ -1,0 +1,87 @@
+/* client/src/pages/NotificationsPage.css */
+
+.notifications-page-container {
+    padding: 20px 15px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.notifications-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #dbdbdb;
+    padding-bottom: 15px;
+}
+
+.notifications-header h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.mark-all-read-btn {
+    background: none;
+    border: none;
+    color: #007AFF;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.notification-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 10px;
+    border-bottom: 1px solid #efefef;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.notification-item:hover {
+    background-color: #f9f9f9;
+}
+
+.notification-item.read {
+    color: #8e8e9e; /* Deixa o texto de notificações lidas mais claro */
+}
+
+.unread-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #007AFF; /* Ponto azul para não lidas */
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.notification-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.notification-message {
+    margin: 0;
+    line-height: 1.4;
+}
+.notification-message strong {
+    font-weight: 600;
+    color: #262626;
+}
+
+.notification-time {
+    font-size: 12px;
+    color: #a8a8a8;
+    margin-top: 4px;
+}
+
+.no-notifications-message {
+    text-align: center;
+    color: #8e8e9e;
+    padding: 40px 0;
+}

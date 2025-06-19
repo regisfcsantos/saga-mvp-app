@@ -74,9 +74,6 @@ const CompetitionCard = ({ competition }) => {
                 <p className={`competition-card-status ${statusClassName}`}>
                     {displayStatusText}
                 </p>
-                <div className="competition-card-button">
-                    Ver Detalhes
-                </div>
             </div>
         </Link>
     );

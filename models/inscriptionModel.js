@@ -64,8 +64,13 @@ const Inscription = {
         `;
         const { rows } = await db.query(query, [status, inscriptionId]);
         return rows[0];
+    },
+    
+    deleteById: async (inscriptionId) => {
+        const query = 'DELETE FROM inscriptions WHERE id = $1 RETURNING *;';
+        const { rows } = await db.query(query, [inscriptionId]);
+        return rows[0]; // Retorna a inscrição que foi deletada
     }
-    // Adicione outras funções conforme necessário
 };
 
 module.exports = Inscription;

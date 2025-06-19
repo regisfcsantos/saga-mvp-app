@@ -11,7 +11,8 @@ const notificationService = require('../services/notificationService'); // <<---
 // ACESSO: POST /api/inscriptions/compete/:competitionId
 router.post('/compete/:competitionId', ensureAuthenticated, ensureRole(['atleta']), async (req, res) => {
     const { competitionId } = req.params;
-    const athlete_id = req.user.id;
+    const athlete_id = req.user.id; // ID do usuário logado
+    const athlete_username = req.user.username; // Username do usuário logado
 
     try {
         // 1. Verificar se a competição existe e se as inscrições estão abertas
@@ -31,15 +32,12 @@ router.post('/compete/:competitionId', ensureAuthenticated, ensureRole(['atleta'
 
         // 3. Criar a nova inscrição
         const newInscription = await Inscription.create({ athlete_id, competition_id: competitionId });
-        res.status(201).json({ 
-            message: "Pré-inscrição realizada com sucesso! Siga as instruções de pagamento para confirmar sua vaga.",
-            inscription: newInscription
-        });
 
+        // 4. Enviar a notificação para o criador da competição
         try {
             await notificationService.notifyNewInscription(
                 competition.creator_id,
-                athlete.username,
+                athlete_username, // <<--- CORRIGIDO: Usa a variável correta
                 competition.name,
                 competition.id
             );
@@ -48,6 +46,7 @@ router.post('/compete/:competitionId', ensureAuthenticated, ensureRole(['atleta'
             // Não quebre a requisição principal por causa de uma notificação
         }
 
+        // 5. Enviar UMA ÚNICA resposta de sucesso para o frontend
         res.status(201).json({ 
             message: "Pré-inscrição realizada com sucesso! Siga as instruções de pagamento para confirmar sua vaga.",
             inscription: newInscription
@@ -55,7 +54,6 @@ router.post('/compete/:competitionId', ensureAuthenticated, ensureRole(['atleta'
 
     } catch (err) {
         console.error("Erro ao criar inscrição:", err);
-        // Tratar erro de constraint única (se o usuário clicar duas vezes muito rápido)
         if (err.constraint === 'unique_athlete_competition') {
             return res.status(400).json({ message: "Você já está inscrito nesta competição." });
         }
@@ -146,6 +144,54 @@ router.get('/my-inscriptions', ensureAuthenticated, async (req, res) => {
     } catch (err) {
         console.error("Erro ao buscar as inscrições do usuário:", err);
         res.status(500).json({ message: "Erro interno ao buscar suas inscrições." });
+    }
+});
+
+// <<--- NOVA ROTA PARA CANCELAR UMA INSCRIÇÃO (CRIADOR/ADMIN) ---<<<
+// ACESSO: DELETE /api/inscriptions/:inscriptionId
+router.delete('/:inscriptionId', ensureAuthenticated, ensureRole(['box', 'admin']), async (req, res) => {
+    const { inscriptionId } = req.params;
+    
+    try {
+        // Passo 1: Buscar a inscrição para verificar a permissão e pegar dados para notificação
+        const inscriptionResult = await db.query('SELECT * FROM inscriptions WHERE id = $1', [inscriptionId]);
+        if (inscriptionResult.rows.length === 0) {
+            return res.status(404).json({ message: "Inscrição não encontrada." });
+        }
+        const inscription = inscriptionResult.rows[0];
+        
+        const competition = await Competition.findById(inscription.competition_id);
+        if (!competition) {
+            return res.status(404).json({ message: "Competição associada não encontrada." });
+        }
+
+        // Passo 2: Verificar se o usuário logado é o criador ou admin
+        if (req.user.id !== competition.creator_id && req.user.role !== 'admin') {
+            return res.status(403).json({ message: "Você não tem permissão para gerenciar esta inscrição." });
+        }
+
+        // Passo 3: Deletar a inscrição
+        const deletedInscription = await Inscription.deleteById(inscriptionId);
+        if (!deletedInscription) {
+             return res.status(404).json({ message: "Não foi possível cancelar a inscrição." });
+        }
+        
+        // Passo 4: Notificar o atleta que sua inscrição foi cancelada
+        try {
+            // Você precisará criar esta nova função de notificação no seu notificationService
+            await notificationService.notifyInscriptionCancelled(
+                inscription.athlete_id,
+                competition.name
+            );
+        } catch (notificationError) {
+            console.error("Falha ao criar notificação de cancelamento de inscrição:", notificationError);
+        }
+        
+        res.json({ message: "Inscrição cancelada com sucesso!" });
+
+    } catch (err) {
+        console.error("Erro ao cancelar inscrição:", err);
+        res.status(500).json({ message: "Erro interno ao cancelar a inscrição." });
     }
 });
 

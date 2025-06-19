@@ -1,0 +1,109 @@
+/* client/src/components/Sidenav.css */
+.sidenav {
+    height: 100%;
+    width: 0; /* Começa fechado */
+    position: fixed;
+    z-index: 1010;
+    top: 0;
+    left: 0;
+    background-color: #ffffff;
+    overflow-x: hidden;
+    transition: 0.4s;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    display: flex; /* <<--- Adicionado */
+    flex-direction: column; /* <<--- Adicionado */
+    justify-content: space-between; /* <<--- Adicionado */
+}
+
+.sidenav.open {
+    width: 280px;
+}
+
+/* Remove o padding-top geral para controlar internamente */
+.sidenav-content {
+    padding-top: 0;
+}
+
+.sidenav-header {
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+}
+
+.sidenav-header .logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #FF5A5F;
+    text-decoration: none;
+}
+
+.sidenav-header .closebtn {
+    font-size: 30px;
+    color: #888;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.sidenav-links {
+    padding-top: 20px;
+}
+
+.sidenav-links a {
+    padding: 12px 15px 12px 25px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #333;
+    display: block;
+    transition: background-color 0.2s;
+}
+
+.sidenav-links a:hover {
+    background-color: #f1f1f1;
+}
+
+/* <<--- NOVOS ESTILOS PARA O RODAPÉ DO SIDENAV ---<<< */
+.sidenav-footer {
+    padding: 20px 25px;
+    border-top: 1px solid #eee;
+}
+
+.sidenav-action-link {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Espaço entre o ícone e o texto */
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 20px;
+}
+.sidenav-action-link:hover {
+    color: #000;
+}
+.sidenav-action-link.login {
+    color: #007bff; /* Cor azul para o botão de login */
+}
+.sidenav-action-link.login:hover {
+    color: #0056b3;
+}
+
+
+.sidenav-footer-links {
+    display: flex;
+    gap: 10px;
+    font-size: 12px;
+}
+
+.sidenav-footer-links a {
+    color: #777;
+    text-decoration: none;
+}
+.sidenav-footer-links a:hover {
+    text-decoration: underline;
+}
+
+.sidenav-footer-links span {
+    color: #ccc;
+}

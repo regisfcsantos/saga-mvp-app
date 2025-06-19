@@ -1,8 +1,9 @@
 // client/src/App.js
-import React from 'react'; // React é sempre necessário para JSX
+import React, { useState } from 'react'; // React é sempre necessário para JSX
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import Navbar from './components/Navbar';
+import Sidenav from './components/Sidenav';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import HomePage from './pages/HomePage';
@@ -11,16 +12,33 @@ import ProfilePage from './pages/ProfilePage';
 import EditProfilePage from './pages/EditProfilePage';
 import AdminBoxRequestsPage from './pages/AdminBoxRequestsPage';
 import CreateCompetitionPage from './pages/CreateCompetitionPage';
-import CompetitionDetailPage from './pages/CompetitionDetailPage'; // <-- IMPORTA A NOVA PÁGINA
-import PaymentInstructionsPage from './pages/PaymentInstructionsPage';
+import CompetitionDetailPage from './pages/CompetitionDetailPage';
 import InscriptionManagementPage from './pages/InscriptionManagementPage';
 import AnalyzeSubmissionsPage from './pages/AnalyzeSubmissionsPage';
+import ContactPage from './pages/ContactPage';
+import BottomNav from './components/BottomNav'; // Importe o novo componente
+import { useAuth } from './contexts/AuthContext';
+import UserSearchPage from './pages/UserSearchPage'; // <<--- Importe
+import NotificationsPage from './pages/NotificationsPage';
+import CreditsPage from './pages/CreditsPage';
 
 function App() {
+  const { currentUser } = useAuth();
+  const [isSidenavOpen, setIsSidenavOpen] = useState(false); // Estado para controlar o menu
+
+  // Função para abrir/fechar o menu
+  const toggleSidenav = () => {
+    setIsSidenavOpen(!isSidenavOpen);
+  };
+
   return (
     <Router>
-      <Navbar />
-      <div className="main-content-area">
+      <Navbar onBurgerClick={toggleSidenav} />
+
+      {/* Passa o estado e a função de fechar para o Sidenav */}
+      <Sidenav isOpen={isSidenavOpen} onClose={toggleSidenav} />
+
+      <main className="page-content">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -70,14 +88,6 @@ function App() {
             element={<CompetitionDetailPage />
             }
           />
-          <Route 
-            path="/pagamento/instrucoes" 
-            element={
-                <ProtectedRoute>
-                    <PaymentInstructionsPage />
-                </ProtectedRoute>
-            } 
-        />
         <Route 
           path="/competicoes/:competitionId/gerenciar-inscricoes"
           element={
@@ -94,8 +104,22 @@ function App() {
               </ProtectedRoute>
           }
         />
+        
+        <Route path="/creditos" element={<CreditsPage />} />
+
+        <Route path="/buscar-usuarios" element={<UserSearchPage />} />
+          <Route 
+            path="/notificacoes" 
+            element={
+              <ProtectedRoute>
+                <NotificationsPage />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
-      </div>
+      </main>
+      
+      <BottomNav />
     </Router>
   );
 }

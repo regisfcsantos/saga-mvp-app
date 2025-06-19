@@ -46,7 +46,7 @@
 .competition-card-price {
     font-size: 16px;
     font-weight: bold;
-    color: #00796b; /* Cor de destaque para preço */
+    color: #333; /* Cor de destaque para preço */
     margin-bottom: 8px;
 }
 

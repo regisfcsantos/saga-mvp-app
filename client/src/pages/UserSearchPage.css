@@ -1,0 +1,43 @@
+/* client/src/pages/BuscarUsuarios.css */
+.search-page-container {
+    padding: 15px;
+}
+
+.search-bar-wrapper {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 12px 12px 45px; /* Espaço para o ícone */
+    border: 1px solid #dbdbdb;
+    border-radius: 10px;
+    font-size: 16px;
+    background-color: #fafafa;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #a8a8a8;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #8e8e9e;
+}
+
+.search-results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.search-message {
+    text-align: center;
+    color: #8e8e9e;
+    margin-top: 30px;
+}

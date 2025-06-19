@@ -162,3 +162,95 @@
 .status-cancelada {
     background-color: #6c757d; /* Cinza */
 }
+
+/* client/src/pages/ProfilePage.css */
+
+/* Estilo para o botão de criar nova competição */
+.create-competition-button {
+    display: inline-block; /* Permite definir largura e margem */
+    margin-top: 20px;      /* Espaço acima do botão */
+    width: auto;           /* Largura baseada no conteúdo */
+    padding: 12px 25px;    /* Espaçamento interno */
+    background-color: #28a745; /* Cor verde de "sucesso" ou "ação positiva" */
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.create-competition-button:hover {
+    background-color: #218838; /* Um verde mais escuro no hover */
+}
+
+/* ================================================= */
+/* === ESTILOS PARA TABELAS RESPONSIVAS (MOBILE) === */
+/* ================================================= */
+
+/* Aplica estes estilos apenas em telas com largura máxima de 768px */
+@media screen and (max-width: 768px) {
+
+    .my-competitions-table thead {
+        display: none;
+    }
+
+    .my-competitions-table, 
+    .my-competitions-table tbody, 
+    .my-competitions-table tr, 
+    .my-competitions-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .my-competitions-table tr {
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    /* --- INÍCIO DA MUDANÇA --- */
+
+    .my-competitions-table td {
+        /* Mantemos o alinhamento central */
+        text-align: center; 
+        padding: 15px 10px; /* Aumentei um pouco o padding para mais respiro */
+        position: relative;
+        border: none;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .my-competitions-table td:last-child {
+        border-bottom: none;
+    }
+
+    .my-competitions-table td::before {
+        /* A MÁGICA ACONTECE AQUI */
+        
+        /* 1. Adicionamos ': ' ao final do título para separá-lo do dado */
+        content: attr(data-label) ": ";
+
+        /* 2. Mantemos o negrito para destacar o título */
+        font-weight: bold;
+        color: #333; /* Podemos deixar o título com uma cor mais forte */
+
+        /* 3. Removemos tudo que forçava o empilhamento */
+        display: inline; /* Garantimos que ele fique na mesma linha (comportamento padrão) */
+        text-transform: none; /* Removemos o uppercase para um visual mais limpo */
+        font-size: inherit; /* O título terá o mesmo tamanho do dado */
+        margin-bottom: 0;
+        position: static;
+        width: auto;
+        padding-right: 0;
+    }
+
+    /* Garantimos que a célula de ações também fique centralizada */
+    .competition-item-actions {
+        justify-content: center;
+        flex-wrap: wrap; 
+        gap: 8px;
+    }
+
+    /* --- FIM DA MUDANÇA --- */
+}

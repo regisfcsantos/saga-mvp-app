@@ -11,7 +11,7 @@ const Competition = {
             contact_details, status, creator_id,
             // Novos campos de pagamento
             payment_method_name, payment_details, proof_of_payment_recipient,
-            proof_of_payment_contact, payment_instructions_detailed
+            proof_of_payment_contact, payment_instructions_detailed, category
         } = data;
         const query = `
             INSERT INTO competitions (
@@ -19,9 +19,9 @@ const Competition = {
                 submission_start_date, submission_end_date, results_date, banner_image_url, 
                 logo_image_url, medal_image_url, awards_info, sponsors_info, price, 
                 contact_details, status, payment_method_name, payment_details, 
-                proof_of_payment_recipient, proof_of_payment_contact, payment_instructions_detailed
+                proof_of_payment_recipient, proof_of_payment_contact, payment_instructions_detailed, category
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23)
             RETURNING *; 
         `;
         const params = [
@@ -29,7 +29,7 @@ const Competition = {
             submission_start_date, submission_end_date, results_date, banner_image_url, 
             logo_image_url, medal_image_url, awards_info, sponsors_info, price, 
             contact_details, status, payment_method_name, payment_details, 
-            proof_of_payment_recipient, proof_of_payment_contact, payment_instructions_detailed
+            proof_of_payment_recipient, proof_of_payment_contact, payment_instructions_detailed, category
         ];
         const { rows } = await db.query(query, params);
         return rows[0];
@@ -46,35 +46,40 @@ const Competition = {
             FROM competitions c
             JOIN users u ON c.creator_id = u.id
         `;
-
         const whereClauses = [];
         const values = [];
         let paramCount = 1;
 
-        // Adiciona filtro por nome da competição (busca parcial, case-insensitive)
         if (filters.name) {
             whereClauses.push(`c.name ILIKE $${paramCount++}`);
             values.push(`%${filters.name}%`);
         }
-
-        // Adiciona filtro por nome do criador (busca parcial, case-insensitive)
         if (filters.creator) {
             whereClauses.push(`u.username ILIKE $${paramCount++}`);
             values.push(`%${filters.creator}%`);
         }
-
-        // Adiciona um filtro para nunca mostrar competições 'rascunho' nesta rota pública
         whereClauses.push(`c.status <> 'rascunho'`);
-
 
         if (whereClauses.length > 0) {
             query += ' WHERE ' + whereClauses.join(' AND ');
         }
-
         query += ' ORDER BY c.created_at DESC;';
 
         const { rows } = await db.query(query, values);
-        return rows;
+
+        // Agrupa os resultados por categoria
+        const groupedByCategory = rows.reduce((acc, comp) => {
+            // CORREÇÃO: Define a categoria como "Outros" se for nula ou vazia.
+            const category = comp.category || 'Outros'; 
+
+            if (!acc[category]) {
+                acc[category] = [];
+            }
+            acc[category].push(comp);
+            return acc;
+        }, {});
+
+        return groupedByCategory;
     },
 
     // Encontrar uma competição pelo seu ID (com informações do criador)
@@ -123,7 +128,7 @@ const Competition = {
 
         const query = `
             UPDATE competitions 
-            SET ${fields.join(', ')}, updated_at = CURRENT_TIMESTAMP 
+            SET ${fields.join(', ')} 
             WHERE id = $${paramCount}
             RETURNING *;
         `;

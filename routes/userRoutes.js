@@ -1,8 +1,8 @@
 // SAGA_MVP/routes/userRoutes.js
 const router = require('express').Router();
 const User = require('../models/userModel'); // Importa o modelo de usuário que acabamos de preencher
-const Competition = require('../models/competitionModel');
 const Inscription = require('../models/inscriptionModel');
+const Competition = require('../models/competitionModel');
 const notificationService = require('../services/notificationService');
 const { ensureAuthenticated } = require('../middleware/authMiddleware'); // Importa o middleware para proteger rotas
 

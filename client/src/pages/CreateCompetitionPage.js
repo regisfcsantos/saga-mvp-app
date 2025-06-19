@@ -10,8 +10,12 @@ const initialFormData = {
     inscription_start_date: '', inscription_end_date: '',
     submission_start_date: '', submission_end_date: '',
     results_date: '', banner_image_url: '', logo_image_url: '',
-    medal_image_url: '', awards_info: '', sponsors_info: '',
-    price: '0.00', contact_details: '', status: 'rascunho', payment_instructions: ''
+    medal_image_url: '', awards_info: '', sponsors_info: '', category: '',
+    price: '0.00', contact_details: '', status: 'rascunho', payment_method_name: '',
+    payment_details: '',
+    proof_of_payment_recipient: '',
+    proof_of_payment_contact: '',
+    payment_instructions_detailed: ''
 };
 
 const CreateCompetitionPage = () => {
@@ -133,6 +137,19 @@ const CreateCompetitionPage = () => {
                 <div className="form-group-comp">
                     <label htmlFor="description" className="form-label-comp">Descrição Completa:</label>
                     <textarea name="description" id="description" value={formData.description} onChange={handleChange} className="form-textarea-comp" required disabled={isSubmitting} />
+                </div>
+
+                <div className="form-group-comp">
+                    <label htmlFor="category" className="form-label-comp">Categoria:</label>
+                    <select name="category" id="category" value={formData.category} onChange={handleChange} className="form-select-comp" required>
+                        <option value="" disabled>Selecione uma categoria...</option>
+                        <option value="Calistenia">Calistenia</option>
+                        <option value="Cardio">Cardio</option>
+                        <option value="Ginastico">Ginástico</option>
+                        <option value="Crossfit Geral">Crossfit Geral</option>
+                        <option value="LPO">LPO</option>
+                        <option value="Powerlifting">Powerlifting</option>
+                    </select>
                 </div>
 
                 {/* Regras */}

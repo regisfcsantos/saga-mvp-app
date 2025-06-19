@@ -15,9 +15,7 @@ const ProfilePage = () => {
 
     const [requestBoxError, setRequestBoxError] = useState('');
     const [requestBoxSuccess, setRequestBoxSuccess] = useState('');
-    const [myCompetitions, setMyCompetitions] = useState([]);
-    const [myInscriptions, setMyInscriptions] = useState([]);
-    // Determina se estamos vendo nosso próprio perfil
+
     const isMyProfile = !username || (currentUser && currentUser.username === username);
 
     useEffect(() => {
@@ -77,12 +75,24 @@ const ProfilePage = () => {
         }
     };
 
+    const handleDeleteCompetition = async (compId, compName) => {
+        if (window.confirm(`Você tem certeza que quer excluir a competição "${compName}"? Esta ação não pode ser desfeita.`)) {
+            try {
+                await axios.delete(`/api/competitions/${compId}`);
+                alert('Competição excluída com sucesso!');
+                // Refresca os dados do perfil para remover a competição da lista
+                // Isso pode ser melhorado para não buscar tudo de novo, mas para o MVP é eficaz.
+                window.location.reload(); 
+            } catch (error) {
+                console.error("Erro ao excluir competição:", error);
+                alert(`Falha ao excluir competição: ${error.response?.data?.message || 'Erro desconhecido'}`);
+            }
+        }
+    };
+
     if (isLoading || authLoading) return <div className="profile-page-container">Carregando perfil...</div>;
     if (error) return <div className="profile-page-container" style={{color: 'red'}}>Erro: {error}</div>;
     if (!viewedUser) return <div className="profile-page-container">Usuário não encontrado.</div>;
-
-    // A partir daqui, usamos 'viewedUser' para exibir os dados.
-    // E 'isMyProfile' para decidir se mostramos os botões de ação.
 
     return (
         <div className="profile-page-container">
@@ -101,6 +111,15 @@ const ProfilePage = () => {
             {isMyProfile && (
                 <div style={{margin: '20px 0'}}>
                     <Link to="/editar-perfil" className="edit-profile-button">Editar Perfil</Link>
+                    {currentUser.role === 'admin' && (
+                        <Link 
+                            to="/admin/aprovar-boxes" 
+                            className="edit-profile-button" // Reutilizando o estilo do botão
+                            style={{marginLeft: '10px', backgroundColor: '#ffc107', color: '#212529'}}
+                        >
+                            Painel do Administrador
+                        </Link>
+                    )}
                     {currentUser.role === 'atleta' && (
                         <>
                             <button onClick={handleRequestBoxRole} className="request-box-button" style={{marginLeft: '10px'}}>
@@ -114,33 +133,50 @@ const ProfilePage = () => {
             )}
 
             {/* Lista de Competições Criadas (se for um Box aprovado) */}
-            {viewedUser.role === 'box' && viewedUser.is_box_approved && viewedUser.created_competitions?.length > 0 && (
+            {viewedUser.role === 'box' && viewedUser.is_box_approved && (
                 <div className="profile-section">
-                    <h3>Competições Criadas</h3>
-                    <table className="my-competitions-table">
-                        {/* ... (cabeçalho da tabela) ... */}
-                        <tbody>
-                            {viewedUser.created_competitions.map(comp => (
-                                <tr key={comp.id}>
-                                    <td><strong>{comp.name}</strong></td>
-                                    <td><span className={`status-badge status-${comp.status}`}>{comp.status}</span></td>
-                                    <td>
-                                        <div className="competition-item-actions">
-                                            <Link to={`/competicoes/${comp.id}`} className="action-button view">Ver</Link>
-                                            {/* Botões de gerenciamento SÓ aparecem se for o meu perfil */}
-                                            {isMyProfile && (
-                                                <>
-                                                    <Link to={`/competicoes/${comp.id}/gerenciar-inscricoes`} className="action-button manage">Gerenciar</Link>
-                                                    <Link to={`/editar-competicao/${comp.id}`} className="action-button edit">Editar</Link>
-                                                    <button onClick={() => alert('Lógica de deletar a ser implementada aqui.')} className="action-button delete">Excluir</button>
-                                                </>
-                                            )}
-                                        </div>
-                                    </td>
+                    <h3>Minhas Competições Criadas</h3>
+                    {viewedUser.created_competitions?.length > 0 ? (
+                        <table className="my-competitions-table">
+                            <thead>
+                                <tr>
+                                    <th>Competição</th>
+                                    <th>Status</th>
+                                    <th style={{ textAlign: 'right' }}>Ações</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {viewedUser.created_competitions.map(comp => (
+                                    <tr key={comp.id}>
+                                        <td data-label="Competição"><strong>{comp.name}</strong></td>
+                                        <td data-label="Status"><span className={`status-badge status-${comp.status}`}>{comp.status.replace('_', ' ')}</span></td>
+                                        <td data-label="Ações">
+                                            <div className="competition-item-actions">
+                                                <Link to={`/competicoes/${comp.id}`} className="action-button view">Ver</Link>
+                                                {isMyProfile && (
+                                                    <>
+                                                        <Link to={`/competicoes/${comp.id}/gerenciar-inscricoes`} className="action-button manage">Gerenciar</Link>
+                                                        <Link to={`/editar-competicao/${comp.id}`} className="action-button edit">Editar</Link>
+                                                        <button onClick={() => handleDeleteCompetition(comp.id, comp.name)} className="action-button delete">Excluir</button>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) : (
+                        <p>Você ainda não criou nenhuma competição.</p>
+                    )}
+
+                    {/* <<--- CORREÇÃO: O BOTÃO AGORA ESTÁ AQUI ---<<< */}
+                    {/* Ele só aparece se for o seu perfil e você for um Box aprovado */}
+                    {isMyProfile && (
+                        <Link to="/criar-competicao" className="create-competition-button">
+                            + Criar Nova Competição
+                        </Link>
+                    )}
                 </div>
             )}
 
@@ -159,13 +195,13 @@ const ProfilePage = () => {
                         <tbody>
                             {viewedUser.inscriptions.map(insc => (
                                 <tr key={insc.inscription_id}>
-                                    <td><strong>
+                                    <td data-label="Competição"><strong>
                                         <Link to={`/competicoes/${insc.competition_id}`} style={{fontWeight: 'bold', textDecoration: 'none'}}>
                                             {insc.competition_name}
                                         </Link>
                                     </strong></td>
-                                    <td><span className={`status-badge status-${insc.inscription_status}`}>{insc.inscription_status.replace(/_/g, ' ')}</span></td>
-                                    <td>
+                                    <td data-label="Status da Inscrição"><span className={`status-badge status-${insc.inscription_status}`}>{insc.inscription_status.replace(/_/g, ' ')}</span></td>
+                                    <td data-label="Prova">
                                         {/* <<--- CÉLULA CONDICIONAL PARA O LINK DO VÍDEO ---<<< */}
                                         {insc.video_url ? (
                                             <a href={insc.video_url} target="_blank" rel="noopener noreferrer" className="youtube-link-icon" title="Ver vídeo da prova">

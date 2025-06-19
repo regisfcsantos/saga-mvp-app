@@ -3,6 +3,28 @@
   text-align: center;
 }
 
+/* Reset e Box Sizing (essencial para layouts consistentes) */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Força a página a ocupar a tela inteira e evita rolagem horizontal indesejada */
+html, body, #root {
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f0f2f5; /* Cor de fundo geral */
+}
+
+/* Define o espaçamento para o conteúdo principal não ficar atrás dos menus fixos */
+.page-content {
+    padding-top: 60px; /* Altura da sua Navbar superior */
+    padding-bottom: 60px; /* Altura da sua BottomNav inferior */
+}
+
 .App-header {
   background-color: #282c34; /* Um cinza escuro para o cabeçalho de teste */
   min-height: 100vh;
