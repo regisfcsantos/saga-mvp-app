@@ -26,7 +26,7 @@ const User = {
     // Encontra um usuário pelo username (para perfis públicos)
     findByUsername: async (username) => {
         // Seleciona apenas os campos que podem ser públicos ou são necessários para a lógica de perfil
-        const query = 'SELECT id, username, email, bio, profile_photo_url, role, is_box_approved, created_at FROM users WHERE username = $1';
+        const query = 'SELECT * FROM users WHERE username = $1';
         const { rows } = await db.query(query, [username]);
         return rows[0];
     },

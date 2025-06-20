@@ -86,12 +86,15 @@
     border-top: 1px solid #eee;
     padding-top: 20px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
 }
 
 .form-delete-button {
     background-color: #dc3545;
+    margin-right: auto;
 }
 .form-delete-button:hover:not(:disabled) {
     background-color: #c82333;
@@ -114,4 +117,47 @@
     color: green;
     margin-top: 10px;
     text-align: center;
+}
+
+/* Adicione este bloco ao final de CreateCompetitionPage.css */
+
+/* Estilos para telas menores que 768px (tablets e celulares) */
+@media screen and (max-width: 768px) {
+  
+  /* Pega o container que agrupa dois campos */
+  .form-group-pair-comp {
+    /* Altera a direção do flexbox de linha (lado a lado) para coluna (um em cima do outro) */
+    flex-direction: column;
+    /* Remove o espaço lateral, já que agora estão empilhados */
+    gap: 0; 
+  }
+
+  /* Garante que cada grupo dentro do par ainda tenha um espaçamento inferior, 
+     que foi removido pelo 'gap: 0' acima */
+  .form-group-pair-comp .form-group-comp {
+    margin-bottom: 20px;
+  }
+}
+
+/* Estiliza o container principal dos botões de ação */
+.form-actions-container {
+    display: flex;
+    justify-content: space-between; /* Empurra os itens para as extremidades */
+    align-items: center;
+    margin-top: 40px;      /* Aumenta o espaço acima dos botões */
+    padding-top: 20px;     /* Adiciona um espaço interno acima */
+    border-top: 1px solid #eee; /* Linha divisória para um look profissional */
+}
+
+/* Estiliza a div que agrupa os botões da direita (Salvar/Publicar) */
+.form-actions-container > div {
+    display: flex;
+    gap: 12px; /* Adiciona um espaço consistente ENTRE os botões */
+}
+
+/* Um ajuste fino nos próprios botões para garantir consistência */
+.form-button-comp {
+    padding: 12px 24px;
+    font-weight: 600;
+    border-radius: 8px;
 }

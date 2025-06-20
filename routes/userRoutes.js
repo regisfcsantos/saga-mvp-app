@@ -31,7 +31,7 @@ router.get('/me', ensureAuthenticated, async (req, res) => {
 // ACESSO: PUT /api/users/me
 router.put('/me', ensureAuthenticated, async (req, res) => {
     const { bio, username, tipo_esporte } = req.body; // Campos que podem ser atualizados
-                                                              // Username e profile_photo_url podem ser mais complexos de atualizar diretamente
+    // Username e profile_photo_url podem ser mais complexos de atualizar diretamente
 
     // Validação básica
     if (bio !== undefined && bio.length > 280) { // Seu limite definido na tabela é 280
@@ -142,6 +142,8 @@ router.get('/search', async (req, res) => {
 router.get('/profile/:username', async (req, res) => {
     try {
         const user = await User.findByUsername(req.params.username);
+
+        console.log('--- BACKEND (PASSO 1) --- Usuário encontrado no DB:', user);
         if (!user) {
             return res.status(404).json({ message: 'Usuário não encontrado.' });
         }
@@ -167,6 +169,8 @@ router.get('/profile/:username', async (req, res) => {
 
         // Busca as competições em que o usuário se inscreveu
         publicProfile.inscriptions = await Inscription.findCompetitionsByAthleteId(user.id);
+
+        console.log('--- BACKEND (PASSO 2) --- Objeto enviado para o Frontend:', publicProfile);
 
         res.json(publicProfile);
     } catch (err) {

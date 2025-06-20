@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import VideoSubmissionForm from './VideoSubmissionForm'; // <<--- Usaremos um formulário separado
+import './CompetitionActionPanel.css';
 
 const CompetitionActionPanel = ({ competition, userInscription, onInscription }) => {
     const navigate = useNavigate();
@@ -40,48 +41,41 @@ const CompetitionActionPanel = ({ competition, userInscription, onInscription })
 
     // Cenário 2: Inscrição PENDENTE DE PAGAMENTO
     if (userInscription.status === 'pendente_pagamento') {
-        // <<--- INÍCIO DA SEÇÃO ATUALIZADA ---<<<
         return (
             <div className="action-panel payment-panel">
                 <h3>Pagamento Pendente</h3>
-                <p>Sua pré-inscrição foi realizada! Para confirmar sua vaga, siga as instruções de pagamento abaixo.</p>
+                <p className="payment-subtitle">Sua pré-inscrição foi registrada! Para confirmar sua vaga, siga as instruções abaixo.</p>
                 
                 <div className="payment-instructions">
-                    <h4>Instruções de Pagamento</h4>
-
-                    {/* Método de Pagamento (Ex: PIX) */}
-                    {competition.payment_method_name &&
-                        <p><strong>Método Sugerido:</strong> {competition.payment_method_name}</p>
+                    {/* Instruções Gerais */}
+                    {competition.payment_instructions_detailed &&
+                        <div className="payment-section">
+                            <h4>Instruções Gerais</h4>
+                            <p>{competition.payment_instructions_detailed}</p>
+                        </div>
                     }
 
-                    {/* Detalhes (Chave PIX ou Conta) */}
-                    {competition.payment_details && (
-                        <div className="payment-method-section">
-                            <strong>Chave PIX / Dados da Conta:</strong>
+                    {/* Detalhes do Pagamento (PIX ou Banco) */}
+                    {competition.payment_details &&
+                        <div className="payment-section">
+                            <h4>{competition.payment_method_name || 'Dados para Pagamento'}</h4>
                             <pre className="payment-details-box">{competition.payment_details}</pre>
                         </div>
-                    )}
-
-                    {/* Contato para Envio do Comprovante */}
-                    {competition.proof_of_payment_contact && (
-                         <div className="payment-method-section">
-                            <strong>Enviar Comprovante via {competition.proof_of_payment_recipient || 'o método indicado'}:</strong>
-                            <p>{competition.proof_of_payment_contact}</p>
-                        </div>
-                    )}
+                    }
                     
-                    {/* Instruções Detalhadas */}
-                    {competition.payment_instructions_detailed && (
-                         <div className="payment-method-section">
-                            <strong>Instruções Adicionais:</strong>
-                            <p style={{ whiteSpace: 'pre-wrap' }}>{competition.payment_instructions_detailed}</p>
+                    {/* Envio do Comprovante */}
+                    {competition.proof_of_payment_contact &&
+                        <div className="payment-section">
+                            <h4>Enviar Comprovante</h4>
+                            <p>
+                                Envie seu comprovante via <strong>{competition.proof_of_payment_recipient || 'o método indicado'}</strong> para o contato: <strong>{competition.proof_of_payment_contact}</strong>.
+                            </p>
                         </div>
-                    )}
+                    }
                 </div>
-                <small>Após o pagamento, o criador da competição irá aprovar sua participação.</small>
+                <small className="payment-footer">Após a validação do pagamento, o organizador irá aprovar sua participação.</small>
             </div>
         );
-        // <<--- FIM DA SEÇÃO ATUALIZADA ---<<<
     }
 
     // Cenário 3: Inscrição CONFIRMADA

@@ -1,0 +1,77 @@
+/* client/src/components/CompetitionActionPanel.css */
+
+.action-panel {
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
+    padding: 25px;
+    text-align: center;
+}
+
+/* Estilos específicos para o painel de pagamento */
+.payment-panel h3 {
+    font-size: 22px;
+    margin-top: 0;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.payment-panel .payment-subtitle {
+    font-size: 1em;
+    color: #666;
+    margin-bottom: 25px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.payment-instructions {
+    text-align: left;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.payment-section {
+    margin-bottom: 24px;
+}
+.payment-section:last-of-type {
+    margin-bottom: 0;
+}
+
+.payment-section h4 {
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 0;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.payment-section p {
+    font-size: 1em;
+    line-height: 1.6;
+    margin: 0;
+    color: #333;
+}
+
+.payment-details-box {
+    background-color: #e9ecef;
+    border: 1px solid #dee2e6;
+    padding: 15px;
+    border-radius: 8px;
+    font-family: 'Courier New', Courier, monospace;
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-size: 1.1em;
+    color: #495057;
+    margin-top: 5px;
+}
+
+.payment-panel .payment-footer {
+    display: block;
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+    font-size: 0.9em;
+    color: #888;
+}

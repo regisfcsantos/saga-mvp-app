@@ -28,6 +28,9 @@ const ProfilePage = () => {
                     // Se é meu perfil, uso os dados do AuthContext
                     // Mas preciso fazer uma chamada para pegar as listas de competições/inscrições
                     const response = await axios.get(`/api/users/profile/${currentUser.username}`);
+
+                    console.log('--- FRONTEND (PASSO 3) --- Resposta da API recebida:', response.data);
+
                     profileData = response.data;
                 } else {
                     // Se é o perfil de outra pessoa, busco os dados dela pela API

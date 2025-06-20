@@ -274,18 +274,31 @@ const CreateCompetitionPage = () => {
                 {/* Botões de Ação */}
                 <div className="form-actions-container">
                     {isEditMode && (
-                         <button type="button" onClick={handleDelete} className="form-button-comp form-delete-button" disabled={isSubmitting}>
-                            Excluir
+                         <button 
+                            type="button" 
+                            onClick={handleDelete} 
+                            className="form-button-comp form-delete-button" 
+                            disabled={isSubmitting}
+                        >
+                            Excluir Competição
                         </button>
                     )}
-                    <div style={{marginLeft: isEditMode ? 'auto' : '0' }}>
-                         <button type="button" onClick={() => handleSave('rascunho')} className="form-button-comp form-draft-button" disabled={isSubmitting}>
-                            {isSubmitting ? 'Salvando...' : 'Salvar como Rascunho'}
-                        </button>
-                        <button type="button" onClick={() => handleSave('publicada')} className="form-button-comp" disabled={isSubmitting}>
-                            {isSubmitting ? 'Publicando...' : 'Publicar Competição'}
-                        </button>
-                    </div>
+                    <button 
+                        type="button" 
+                        onClick={() => handleSave('rascunho')} 
+                        className="form-button-comp form-draft-button" 
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? 'Salvando...' : 'Salvar Rascunho'}
+                    </button>
+                    <button 
+                        type="button" 
+                        onClick={() => handleSave('publicada')} 
+                        className="form-button-comp form-publish-button" // Adicionamos uma classe específica
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? 'Publicando...' : 'Publicar Competição'}
+                    </button>
                 </div>
             </div>
             {/* Fim do Formulário JSX Completo */}
