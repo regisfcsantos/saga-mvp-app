@@ -4,7 +4,7 @@ const db = require('../config/db'); // Importa a configuração da sua conexão 
 const User = {
     // Encontra um usuário pelo ID
     findById: async (id) => {
-        const query = 'SELECT id, username, email, bio, profile_photo_url, role, is_box_approved, social_provider, social_id, created_at, updated_at FROM users WHERE id = $1';
+        const query = 'SELECT * FROM users WHERE id = $1';
         const { rows } = await db.query(query, [id]);
         return rows[0];
     },
@@ -45,34 +45,43 @@ const User = {
     },
 
     // Atualiza o perfil de um usuário (ex: bio, username se permitido, foto)
-    updateProfile: async (id, { username, bio, profile_photo_url }) => {
-        const fields = [];
-        const values = [];
-        let query = 'UPDATE users SET ';
+    updateProfile: async (userId, fieldsToUpdate) => {
+        // Pega as chaves dos campos que queremos atualizar (ex: ['bio', 'username', 'tipo_esporte'])
+        const fields = Object.keys(fieldsToUpdate);
 
-        if (username !== undefined) {
-            fields.push(`username = $${fields.length + 1}`);
-            values.push(username);
-        }
-        if (bio !== undefined) {
-            fields.push(`bio = $${fields.length + 1}`);
-            values.push(bio);
-        }
-        if (profile_photo_url !== undefined) {
-            fields.push(`profile_photo_url = $${fields.length + 1}`);
-            values.push(profile_photo_url);
-        }
-
+        // Se nenhum campo válido foi enviado, não faz nada e retorna o usuário como está.
         if (fields.length === 0) {
-            // Nada para atualizar, retorna os dados atuais ou um erro/null
-            return this.findById(id); // Retorna o usuário existente
+            return await db.query('SELECT * FROM users WHERE id = $1', [userId]).rows[0];
         }
 
-        query += fields.join(', ') + ', updated_at = CURRENT_TIMESTAMP WHERE id = $' + (fields.length + 1) + ' RETURNING id, username, email, bio, profile_photo_url, role, is_box_approved';
-        values.push(id);
-        
-        const { rows } = await db.query(query, values);
-        return rows[0];
+        // Mapeia as chaves para criar os trechos da query SQL (ex: "bio" = $2, "username" = $3)
+        // O $1 será sempre o userId na cláusula WHERE. Por isso começamos o index com 2.
+        const setClauses = fields.map((field, index) => `"${field}" = $${index + 2}`).join(', ');
+
+        // Pega os valores correspondentes às chaves na mesma ordem
+        const values = fields.map(field => fieldsToUpdate[field]);
+
+        // Monta a query final de forma dinâmica
+        const query = `
+            UPDATE users
+            SET ${setClauses}
+            WHERE id = $1
+            RETURNING *;
+        `;
+
+        try {
+            // Executa a query com o userId e os outros valores
+            const { rows } = await db.query(query, [userId, ...values]);
+            
+            // Retorna o usuário completamente atualizado do banco
+            return rows[0];
+
+        } catch (error) {
+            console.error('Erro no model ao atualizar perfil:', error);
+            // Re-lança o erro para que a camada de Rota (userRoutes) possa tratá-lo
+            // (por exemplo, para pegar o erro de username duplicado)
+            throw error;
+        }
     },
 
     // Atualiza o usuário para solicitar o papel de "box"

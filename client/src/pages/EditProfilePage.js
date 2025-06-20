@@ -3,23 +3,26 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
-import './EditProfilePage.css'; // Crie este arquivo para estilos
+import './EditProfilePage.css'; // Nosso novo CSS
 
 const EditProfilePage = () => {
-    const { currentUser, setCurrentUser, isLoading } = useAuth(); // setCurrentUser para atualizar o contexto
+    const { currentUser, setCurrentUser, isLoading } = useAuth();
     const navigate = useNavigate();
 
+    // Adicionamos o novo estado para o tipo de esporte
     const [username, setUsername] = useState('');
     const [bio, setBio] = useState('');
-    const [profilePhotoUrl, setProfilePhotoUrl] = useState('');
+    const [tipoEsporte, setTipoEsporte] = useState(''); // <<--- NOVO ESTADO
+    
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         if (currentUser) {
             setUsername(currentUser.username || '');
             setBio(currentUser.bio || '');
-            setProfilePhotoUrl(currentUser.profile_photo_url || '');
+            setTipoEsporte(currentUser.tipo_esporte || ''); // <<--- Popula o novo estado
         }
     }, [currentUser]);
 
@@ -27,65 +30,74 @@ const EditProfilePage = () => {
         e.preventDefault();
         setError('');
         setSuccess('');
+        setIsSubmitting(true);
 
-        if (bio.length > 280) {
-            setError('A biografia não pode exceder 280 caracteres.');
-            return;
-        }
-
-        // No MVP, username pode ser mais complexo de alterar devido à unicidade.
-        // Vamos focar em bio e profile_photo_url (como texto por enquanto).
+        // Prepara os dados para enviar à API
         const profileDataToUpdate = {
+            username: username,
             bio: bio,
-            // profile_photo_url: profilePhotoUrl, // Descomente se quiser permitir edição da URL da foto
-            // username: username // Descomente se quiser permitir edição do username (requer mais validação no backend)
+            tipo_esporte: tipoEsporte,
         };
 
         try {
-            const response = await axios.put('/api/users/me', profileDataToUpdate, {
-                headers: {
-                    // Se sua API PUT /api/users/me precisar de autenticação via token no header,
-                    // você precisará adicioná-lo. Com sessões baseadas em cookies (configuração atual do Passport),
-                    // o cookie de sessão geralmente é enviado automaticamente pelo navegador.
-                }
-            });
+            // A rota PUT /api/users/me já está pronta para receber estes dados
+            const response = await axios.put('/api/users/me', profileDataToUpdate);
 
-            setCurrentUser(prevUser => ({ ...prevUser, ...response.data })); // Atualiza o usuário no AuthContext
+            // Atualiza o usuário no AuthContext com os novos dados
+            setCurrentUser(prevUser => ({ ...prevUser, ...response.data })); 
+            
             setSuccess('Perfil atualizado com sucesso!');
-            // setTimeout(() => navigate('/perfil'), 2000); // Opcional: redireciona após um tempo
+            
+            setTimeout(() => {
+                 // Navega para o novo username, se ele mudou
+                navigate(`/perfil/${response.data.username}`);
+            }, 1500);
+
         } catch (err) {
             console.error("Erro ao atualizar perfil:", err);
             setError(err.response?.data?.message || 'Falha ao atualizar o perfil. Tente novamente.');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     if (isLoading) {
-        return <div className="container">Carregando...</div>;
-    }
-    if (!currentUser) {
-        // Normalmente, ProtectedRoute cuidaria disso, mas como fallback:
-        navigate('/login');
-        return null; 
+        return <div className="edit-profile-container">Carregando...</div>;
     }
 
     return (
-        <div className="container">
+        <div className="edit-profile-container">
             <h2>Editar Perfil</h2>
-            {error && <p className="errorMessage" >{error}</p>}
-            {success && <p className="successMessage">{success}</p>}
-            <form onSubmit={handleSubmit}>
-                <div className="formGroup">
+            
+            <form className="edit-profile-form" onSubmit={handleSubmit}>
+                {error && <p className="error-message">{error}</p>}
+                {success && <p className="success-message">{success}</p>}
+
+                <div className="form-group">
                     <label htmlFor="username">Nome de Usuário:</label>
                     <input
                         type="text"
                         id="username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        disabled // MVP: Deixar username desabilitado para evitar problemas de unicidade por enquanto
+                        required
                     />
-                    <small>O nome de usuário não pode ser alterado nesta versão.</small>
+                     <small>Pode conter apenas letras, números e _. Mínimo 3 caracteres.</small>
                 </div>
-                <div className="formGroup">
+
+                <div className="form-group">
+                    <label htmlFor="tipoEsporte">Tipo de Esporte:</label>
+                    <input
+                        type="text"
+                        id="tipoEsporte"
+                        value={tipoEsporte}
+                        onChange={(e) => setTipoEsporte(e.target.value)}
+                        placeholder="Ex: Crossfit, Calistenia, LPO"
+                    />
+                    <small>O esporte que você pratica ou que seu Box representa.</small>
+                </div>
+
+                <div className="form-group">
                     <label htmlFor="bio">Bio (até 280 caracteres):</label>
                     <textarea
                         id="bio"
@@ -94,21 +106,15 @@ const EditProfilePage = () => {
                         maxLength={280}
                     />
                 </div>
-                <div className="formGroup">
-                    <label htmlFor="profilePhotoUrl">URL da Foto de Perfil:</label>
-                    <input
-                        type="text"
-                        id="profilePhotoUrl"
-                        value={profilePhotoUrl}
-                        onChange={(e) => setProfilePhotoUrl(e.target.value)}
-                        disabled // Para login social, a foto vem do provedor. Deixar desabilitado por enquanto.
-                    />
-                     <small>A foto de perfil é gerenciada pelo seu provedor de login social (Google/Facebook).</small>
+                
+                <div className="form-actions">
+                    <button type="button" className="button-cancel" onClick={() => navigate(-1)} disabled={isSubmitting}>
+                        Cancelar
+                    </button>
+                    <button type="submit" className="button-save" disabled={isSubmitting}>
+                        {isSubmitting ? 'Salvando...' : 'Salvar Alterações'}
+                    </button>
                 </div>
-                <button type="submit">Salvar Alterações</button>
-                <button type="button" className="buttonCancel" onClick={() => navigate('/perfil')}>
-                    Cancelar
-                </button>
             </form>
         </div>
     );

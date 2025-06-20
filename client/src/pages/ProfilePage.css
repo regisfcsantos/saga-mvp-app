@@ -1,11 +1,9 @@
 /* client/src/pages/ProfilePage.css */
 .profile-page-container {
-    padding: 20px;
-    text-align: center;
-    max-width: 900px;
+    padding: 0 20px;
+    max-width: 680px;
     margin: 20px auto; /* Centraliza e dá espaço do header */
-    background-color: #fff; /* Adicionando um fundo branco para a área do perfil */
-    border-radius: 8px;
+    background-color: transparent; /* Adicionando um fundo branco para a área do perfil */
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
@@ -14,20 +12,111 @@
     color: #333;
 }
 
+/* --- Card Principal do Perfil (Novo) --- */
+.profile-card {
+    background-color: #f7f7f7;
+    border-radius: 24px;
+    padding: 20px;
+    padding-top: 25px;
+    position: relative;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
 .profile-image {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
     margin-bottom: 20px;
     border: 3px solid #eee;
 }
 
-.profile-page-container p {
-    margin-bottom: 10px;
+.profile-card-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+
+    /* Mágica para posicionar a imagem "flutuando" 
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    */
+}
+
+.profile-card-name {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 10px 0 0 0;
+}
+
+.profile-card-subtitle {
     font-size: 16px;
-    color: #444;
+    color: #666;
+    margin-top: 4px;
+    margin-bottom: 20px;
+}
+
+/* --- Container das Estatísticas (Novo) --- */
+.profile-stats-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 18px 0;
+    border-top: 1px solid #f0f0f0;
+    background-color: #fff;
+    border-radius: 20px;
+}
+
+/* Em ProfilePage.css, encontre e substitua esta regra: */
+
+.profile-stat-box {
+    /* Otimizado para o novo layout de título acima */
+    display: flex;
+    flex-direction: column; /* Empilha o valor e o título */
+    align-items: center;    /* Centraliza horizontalmente */
+    gap: 4px;               /* Espaço entre o valor e o título */
+    min-width: 100px;       /* Garante um espaço mínimo */
+}
+
+/* E ajuste as regras para .value e .label assim: */
+.profile-stat-box .value {
+    font-size: 17px;  /* Deixa o valor maior e mais destacado */
+    font-weight: 700;
+    line-height: 1; /* Garante que a altura da linha não adicione espaço extra */
+}
+
+.profile-stat-box .label {
+    font-size: 10px;
+    margin-top: 3px;
+    text-transform: lowercase;
+    color: #292929;
+    line-height: 1;
+    font-weight: 600;
+}
+
+/* --- Card de Conteúdo Genérico (Novo) --- */
+.profile-content-card {
+    background-color: #f7f7f7;
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    text-align: left;
+}
+
+.profile-content-card h3 {
+    font-size: 20px;
+    margin-top: 0;
+    margin-bottom: 0px;
+}
+
+.profile-page-container p {
+    margin-bottom: 14px;
+    font-size: 14px;
+    color: #626262;
     line-height: 1.6;
+    font-weight: 400;
 }
 
 .profile-page-container p strong {
@@ -49,31 +138,29 @@
     font-size: 1.1em; /* Relativo ao pai */
 }
 
-.edit-profile-button {
+.edit-profile-button, .request-box-button {
     display: inline-block;
-    margin-top: 25px; /* Aumentei um pouco a margem */
-    padding: 12px 20px; /* Aumentei um pouco o padding */
-    background-color: #007bff;
+    margin: 10px 5px 5px 0; /* Aumentei um pouco a margem */
+    padding: 6px 20px; /* Aumentei um pouco o padding */
     color: white;
     text-decoration: none;
     border-radius: 5px;
-    font-size: 16px;
     transition: background-color 0.2s ease;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
 }
 
 .edit-profile-button:hover {
     background-color: #0056b3;
 }
 
-.request-box-button { /* Estilo para o botão "Solicitar ser um Box" */
-    padding: 8px 15px;
-    font-size: 14px;
+.edit-profile-button {
+    background-color: #00438a;
+}
+
+.request-box-button {
     background-color: #28a745; /* Verde */
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
 }
 
 .request-box-button:hover {
@@ -123,33 +210,64 @@
 
 .competition-item-actions {
     display: flex;
-    flex-wrap: nowrap; /* Garante que os botões não quebrem a linha */
+    flex-wrap: nowrap;
     gap: 8px;
+    justify-content: flex-end; /* Alinha os botões à direita na célula */
 }
 
-.competition-item-actions .action-button {
-    padding: 6px 12px;
+/* Base comum para todos os botões de ação */
+.action-button {
+    padding: 8px 16px;
     text-decoration: none;
-    color: white;
-    border-radius: 5px;
-    border: none;
+    border-radius: 8px;
+    border: 2px solid transparent; /* Borda transparente para manter o tamanho consistente */
     cursor: pointer;
-    font-size: 0.9em;
+    font-size: 14px;
+    font-weight: 600;
     white-space: nowrap;
-    transition: opacity 0.2s ease;
+    transition: all 0.2s ease;
 }
 
 .competition-item-actions .action-button:hover {
     opacity: 0.85;
 }
 
-/* Cores dos botões */
+/* Estilo do Botão Primário (Ação principal) */
+.action-button.primary {
+    background-color: #2a2a2e; /* Cinza escuro/quase preto da Gymshark */
+    color: white;
+}
+.action-button.primary:hover {
+    background-color: #4a4a4f;
+}
+
+/* Estilo do Botão Secundário (Ação de edição/suporte) */
+.action-button.secondary {
+    background-color: #ddd;
+    color: #2a2a2e;
+    border-color: #ccc; /* Borda cinza clara */
+}
+.action-button.secondary:hover {
+    background-color: #f5f5f7; /* Fundo cinza bem claro no hover */
+    border-color: #cccccc;
+}
+
+/* Estilo do Botão Destrutivo (Excluir) */
+.action-button.destructive {
+    background-color: #c92a2a; /* Vermelho mais sóbrio */
+    color: white;
+}
+.action-button.destructive:hover {
+    background-color: #a62222;
+}
+
+/* Cores dos botões
 .action-button.view { background-color: #17a2b8; }
 .action-button.manage { background-color: #ffc107; color: #212529; }
 .action-button.edit { background-color: #007bff; }
 .action-button.delete { background-color: #dc3545; }
 .action-button.analyse { background-color: #5bc0de;}
-
+*/
 /* --- FIM DO BLOCO DE ESTILOS PARA A TABELA DE COMPETIÇÕES --- */
 
 /* Adicione estas classes ao seu ProfilePage.css */
@@ -171,7 +289,7 @@
     margin-top: 20px;      /* Espaço acima do botão */
     width: auto;           /* Largura baseada no conteúdo */
     padding: 12px 25px;    /* Espaçamento interno */
-    background-color: #28a745; /* Cor verde de "sucesso" ou "ação positiva" */
+    background-color: #006317; /* Cor verde de "sucesso" ou "ação positiva" */
     color: white;
     font-size: 16px;
     font-weight: 600;
@@ -205,7 +323,7 @@
 
     .my-competitions-table tr {
         margin-bottom: 20px;
-        border: 1px solid #ddd;
+        border: 1px solid #ccc;
         border-radius: 8px;
         overflow: hidden;
     }
@@ -218,7 +336,7 @@
         padding: 15px 10px; /* Aumentei um pouco o padding para mais respiro */
         position: relative;
         border: none;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid #ccc;
     }
     
     .my-competitions-table td:last-child {
@@ -239,7 +357,7 @@
         display: inline; /* Garantimos que ele fique na mesma linha (comportamento padrão) */
         text-transform: none; /* Removemos o uppercase para um visual mais limpo */
         font-size: inherit; /* O título terá o mesmo tamanho do dado */
-        margin-bottom: 0;
+        margin-bottom: 5px;
         position: static;
         width: auto;
         padding-right: 0;
@@ -250,6 +368,7 @@
         justify-content: center;
         flex-wrap: wrap; 
         gap: 8px;
+        margin-top: 5px;
     }
 
     /* --- FIM DA MUDANÇA --- */

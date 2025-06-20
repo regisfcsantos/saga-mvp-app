@@ -30,7 +30,7 @@ router.get('/me', ensureAuthenticated, async (req, res) => {
 // ROTA: Atualizar perfil do usuário logado (privado)
 // ACESSO: PUT /api/users/me
 router.put('/me', ensureAuthenticated, async (req, res) => {
-    const { bio /*, username, profile_photo_url */ } = req.body; // Campos que podem ser atualizados
+    const { bio, username, tipo_esporte } = req.body; // Campos que podem ser atualizados
                                                               // Username e profile_photo_url podem ser mais complexos de atualizar diretamente
 
     // Validação básica
@@ -38,11 +38,15 @@ router.put('/me', ensureAuthenticated, async (req, res) => {
         return res.status(400).json({ message: 'Biografia excede o limite de 280 caracteres.' });
     }
 
+    if (username !== undefined && (username.length < 3 || !/^[a-zA-Z0-9_]+$/.test(username))) {
+         return res.status(400).json({ message: 'Nome de usuário deve ter no mínimo 3 caracteres e conter apenas letras, números e underline (_).' });
+    }
+
     // Crie um objeto apenas com os campos que foram enviados para atualização
     const fieldsToUpdate = {};
     if (bio !== undefined) fieldsToUpdate.bio = bio;
-    // if (username !== undefined) fieldsToUpdate.username = username; // Adicionar lógica de unicidade se habilitar
-    // if (profile_photo_url !== undefined) fieldsToUpdate.profile_photo_url = profile_photo_url;
+    if (username !== undefined) fieldsToUpdate.username = username;
+    if (tipo_esporte !== undefined) fieldsToUpdate.tipo_esporte = tipo_esporte;
 
     if (Object.keys(fieldsToUpdate).length === 0) {
         return res.status(400).json({ message: 'Nenhum dado fornecido para atualização.' });
@@ -54,14 +58,13 @@ router.put('/me', ensureAuthenticated, async (req, res) => {
             return res.status(404).json({ message: 'Usuário não encontrado para atualização.' });
         }
         // Retorna o usuário atualizado, sem campos sensíveis se houver
-        const { id, username, email, bio: updatedBio, profile_photo_url: updatedPhoto, role, is_box_approved } = updatedUser;
-        res.json({ id, username, email, bio: updatedBio, profile_photo_url: updatedPhoto, role, is_box_approved });
+        res.json(updatedUser);
     } catch (err) {
         console.error("Erro ao atualizar perfil /me:", err);
         // Se você tiver constraints de unicidade (ex: para username) no DB, trate o erro aqui
-        // if (err.constraint === 'users_username_key') {
-        //     return res.status(400).json({ message: 'Este nome de usuário já está em uso.' });
-        // }
+        if (err.constraint === 'users_username_key') {
+            return res.status(400).json({ message: 'Este nome de usuário já está em uso.' });
+        }
         res.status(500).json({ message: 'Erro interno ao atualizar o perfil.' });
     }
 });
@@ -149,6 +152,7 @@ router.get('/profile/:username', async (req, res) => {
             username: user.username,
             bio: user.bio,
             profile_photo_url: user.profile_photo_url,
+            tipo_esporte: user.tipo_esporte,
             role: user.role,
             is_box_approved: (user.role === 'box' ? user.is_box_approved : undefined),
             created_at: user.created_at,

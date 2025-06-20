@@ -49,9 +49,9 @@ router.get('/current_user', (req, res) => {
     console.log('req.user (da sessão):', req.user); // LOG 7
     if (req.isAuthenticated()) { // req.isAuthenticated() é adicionado pelo Passport
         // Não envie a senha ou outros dados sensíveis do req.user
-        const { id, username, email, bio, profile_photo_url, role, is_box_approved } = req.user;
+        const { id, username, email, bio, profile_photo_url, role, is_box_approved, tipo_esporte } = req.user;
         res.status(200).json({
-            user: { id, username, email, bio, profile_photo_url, role, is_box_approved }
+            user: { id, username, email, bio, profile_photo_url, role, is_box_approved, tipo_esporte }
         });
     } else {
         res.status(200).json({ user: null }); // Ou res.status(401).json({ message: 'Não autenticado' });

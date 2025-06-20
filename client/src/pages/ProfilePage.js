@@ -96,94 +96,67 @@ const ProfilePage = () => {
 
     return (
         <div className="profile-page-container">
-            <h2>Perfil de {viewedUser.username}</h2>
-            {viewedUser.profile_photo_url && (
-                <img src={viewedUser.profile_photo_url} alt="Perfil" className="profile-image"/>
-            )}
-
-            <p><strong>Bio:</strong> {viewedUser.bio || "Nenhuma bio definida."}</p>
-            {/* Mostra status de Box apenas se o perfil for de um Box */}
-            {viewedUser.role === 'box' && (
-                <p><strong>Status de Box:</strong> {viewedUser.is_box_approved ? <span style={{color: 'green'}}>Aprovado</span> : <span style={{color: '#ffa000'}}>Pendente</span>}</p>
-            )}
-
-            {/* Botões de ação SÓ aparecem se for o meu perfil */}
-            {isMyProfile && (
-                <div style={{margin: '20px 0'}}>
-                    <Link to="/editar-perfil" className="edit-profile-button">Editar Perfil</Link>
-                    {currentUser.role === 'admin' && (
-                        <Link 
-                            to="/admin/aprovar-boxes" 
-                            className="edit-profile-button" // Reutilizando o estilo do botão
-                            style={{marginLeft: '10px', backgroundColor: '#ffc107', color: '#212529'}}
-                        >
-                            Painel do Administrador
-                        </Link>
-                    )}
-                    {currentUser.role === 'atleta' && (
-                        <>
-                            <button onClick={handleRequestBoxRole} className="request-box-button" style={{marginLeft: '10px'}}>
-                                Solicitar ser um Box
-                            </button>
-                            {requestBoxError && <p style={{color: 'red', marginTop: '10px'}}>{requestBoxError}</p>}
-                            {requestBoxSuccess && <p style={{color: 'green', marginTop: '10px'}}>{requestBoxSuccess}</p>}
-                        </>
-                    )}
+            <div className="profile-card">
+                <img 
+                    src={viewedUser.profile_photo_url || '/default-avatar.png'} 
+                    alt="Perfil" 
+                    className="profile-card-image"
+                />
+                <h1 className="profile-card-name">{viewedUser.username}</h1>
+                <p className="profile-card-subtitle">{viewedUser.tipo_esporte || 'Atleta'}</p>
+                
+                <div className="profile-stats-container">
+                    <div className="profile-stat-box">
+                        <span className="value">{viewedUser.role}</span>
+                        <span className="label">Tipo de Usuário</span>
+                    </div>
+                    <div className="profile-stat-box">
+                        <span className="value">N/A</span>
+                        <span className="label">Score Global</span>
+                    </div>
                 </div>
-            )}
+            </div>
 
-            {/* Lista de Competições Criadas (se for um Box aprovado) */}
-            {viewedUser.role === 'box' && viewedUser.is_box_approved && (
-                <div className="profile-section">
-                    <h3>Minhas Competições Criadas</h3>
-                    {viewedUser.created_competitions?.length > 0 ? (
-                        <table className="my-competitions-table">
-                            <thead>
-                                <tr>
-                                    <th>Competição</th>
-                                    <th>Status</th>
-                                    <th style={{ textAlign: 'right' }}>Ações</th>
+            {/* Card de Competições Criadas */}
+            {viewedUser.role === 'box' && viewedUser.created_competitions?.length > 0 && (
+                <div className="profile-content-card">
+                    <h3>Competições Criadas</h3>
+                    <table className="my-competitions-table">
+                        <thead>
+                            <tr>
+                                <th>Competição</th>
+                                <th>Status</th>
+                                <th style={{ textAlign: 'right' }}>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {viewedUser.created_competitions.map(comp => (
+                                <tr key={comp.id}>
+                                    <td data-label="Competição"><strong>{comp.name}</strong></td>
+                                    <td data-label="Status"><span className={`status-badge status-${comp.status}`}>{comp.status.replace('_', ' ')}</span></td>
+                                    <td data-label="Ações">
+                                        <div className="competition-item-actions">
+                                            <Link to={`/competicoes/${comp.id}`} className="action-button primary">Ver</Link>
+                                            {isMyProfile && (
+                                                <>
+                                                    <Link to={`/competicoes/${comp.id}/gerenciar-inscricoes`} className="action-button primary">Gerenciar</Link>
+                                                    <Link to={`/editar-competicao/${comp.id}`} className="action-button secondary">Editar</Link>
+                                                    <button onClick={() => handleDeleteCompetition(comp.id, comp.name)} className="action-button destructive">Excluir</button>
+                                                </>
+                                            )}
+                                        </div>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {viewedUser.created_competitions.map(comp => (
-                                    <tr key={comp.id}>
-                                        <td data-label="Competição"><strong>{comp.name}</strong></td>
-                                        <td data-label="Status"><span className={`status-badge status-${comp.status}`}>{comp.status.replace('_', ' ')}</span></td>
-                                        <td data-label="Ações">
-                                            <div className="competition-item-actions">
-                                                <Link to={`/competicoes/${comp.id}`} className="action-button view">Ver</Link>
-                                                {isMyProfile && (
-                                                    <>
-                                                        <Link to={`/competicoes/${comp.id}/gerenciar-inscricoes`} className="action-button manage">Gerenciar</Link>
-                                                        <Link to={`/editar-competicao/${comp.id}`} className="action-button edit">Editar</Link>
-                                                        <button onClick={() => handleDeleteCompetition(comp.id, comp.name)} className="action-button delete">Excluir</button>
-                                                    </>
-                                                )}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    ) : (
-                        <p>Você ainda não criou nenhuma competição.</p>
-                    )}
-
-                    {/* <<--- CORREÇÃO: O BOTÃO AGORA ESTÁ AQUI ---<<< */}
-                    {/* Ele só aparece se for o seu perfil e você for um Box aprovado */}
-                    {isMyProfile && (
-                        <Link to="/criar-competicao" className="create-competition-button">
-                            + Criar Nova Competição
-                        </Link>
-                    )}
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
             )}
 
-            {/* Lista de Inscrições do Atleta */}
+            {/* Card de Inscrições */}
             {viewedUser.inscriptions?.length > 0 && (
-                <div className="profile-section">
-                    <h3>Inscrições em Competições</h3>
+                <div className="profile-content-card">
+                    <h3>Minhas Inscrições</h3>
                     <table className="my-competitions-table">
                        <thead>
                             <tr>
@@ -215,6 +188,31 @@ const ProfilePage = () => {
                             ))}
                         </tbody>
                     </table>
+                </div>
+            )}
+
+            {/* Card de Ações (Aparece apenas no seu próprio perfil) */}
+            {isMyProfile && (
+                <div className="profile-content-card">
+                    <h3>Ações</h3>
+                    <div className="profile-actions">
+                        <Link to="/editar-perfil" className="edit-profile-button">Editar Perfil</Link>
+                        {currentUser.role === 'atleta' && (
+                             <button onClick={handleRequestBoxRole} className="request-box-button">
+                                Solicitar ser um Box
+                            </button>
+                        )}
+                        {currentUser.role === 'box' && currentUser.is_box_approved && (
+                            <Link to="/criar-competicao" className="create-competition-button">
+                                + Criar Nova Competição
+                            </Link>
+                        )}
+                         {currentUser.role === 'admin' && (
+                            <Link to="/admin/aprovar-boxes" className="action-button manage">Painel Admin</Link>
+                        )}
+                        {requestBoxError && <p style={{color: 'red', textAlign:'center'}}>{requestBoxError}</p>}
+                        {requestBoxSuccess && <p style={{color: 'green', textAlign:'center'}}>{requestBoxSuccess}</p>}
+                    </div>
                 </div>
             )}
         </div>

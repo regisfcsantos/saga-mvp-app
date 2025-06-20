@@ -19,10 +19,8 @@ passport.serializeUser((user, done) => {
 
 // Define como o usuário será recuperado da sessão usando o ID armazenado
 passport.deserializeUser(async (id, done) => {
-    console.log('--- DeserializeUser ---');
-    console.log('ID para desserializar:', id); // LOG 2
     try {
-        const result = await db.query('SELECT id, username, email, bio, profile_photo_url, role, is_box_approved FROM users WHERE id = $1', [id]); // Selecionando campos específicos
+        const result = await db.query('SELECT * FROM users WHERE id = $1', [id]); // Selecionando campos específicos
         if (result.rows.length > 0) {
             console.log('Usuário desserializado encontrado no DB:', result.rows[0]); // LOG 3
             done(null, result.rows[0]);

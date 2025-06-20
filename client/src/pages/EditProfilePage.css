@@ -1,58 +1,119 @@
-container { 
-  padding: 20px;
-  max-width: 600px;
-  margin: 20px auto
+/* client/src/pages/EditProfilePage.css */
+
+.edit-profile-container {
+    max-width: 700px;
+    margin: 30px auto;
+    padding: 20px;
 }
 
-formGroup { 
-  margin-bottom: 15px;
-  text-align: left
+.edit-profile-container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 28px;
+    color: #333;
 }
 
-label { 
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold
+.edit-profile-form {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
-input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
+.form-group {
+    margin-bottom: 20px;
 }
 
-textarea {
-  width: 100%;
-  padding: 10px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-  min-height: 100px;
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+    font-size: 14px;
 }
 
-button {
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-  margin-right: 10px;
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-size: 16px;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.buttonCancel {
-  background-color: #6c757d;
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #007AFF;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
 }
 
-.errorMessage { 
-  color: red;
-  margin-bottom: 15px;
+.form-group textarea {
+    min-height: 120px;
+    resize: vertical;
 }
 
-.successMessage { 
-  color: green; 
-  margin-bottom: 15px; 
+.form-group small {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #888;
+}
+
+.form-actions {
+    margin-top: 30px;
+    display: flex;
+    justify-content: flex-end; /* Alinha botões à direita */
+    gap: 12px;
+}
+
+.form-actions button {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.form-actions button:active {
+    transform: scale(0.98);
+}
+
+.button-save {
+    background-color: #007AFF;
+    color: white;
+}
+.button-save:hover {
+    background-color: #0056b3;
+}
+
+.button-cancel {
+    background-color: #f0f0f0;
+    color: #333;
+}
+.button-cancel:hover {
+    background-color: #e0e0e0;
+}
+
+.error-message, .success-message {
+    text-align: center;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.error-message {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+}
+
+.success-message {
+    color: #155724;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
 }
