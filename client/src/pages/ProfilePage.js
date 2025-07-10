@@ -3,6 +3,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom'; // useParams é a chave aqui
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
+import ProfileScorecard from '../components/ProfileScorecard';
+import SeloGallery from '../components/SeloGallery';
 import './ProfilePage.css';
 
 const ProfilePage = () => {
@@ -108,16 +110,9 @@ const ProfilePage = () => {
                 <h1 className="profile-card-name">{viewedUser.username}</h1>
                 <p className="profile-card-subtitle">{viewedUser.tipo_esporte || 'Atleta'}</p>
                 
-                <div className="profile-stats-container">
-                    <div className="profile-stat-box">
-                        <span className="value">{viewedUser.role}</span>
-                        <span className="label">Tipo de Usuário</span>
-                    </div>
-                    <div className="profile-stat-box">
-                        <span className="value">N/A</span>
-                        <span className="label">Score Global</span>
-                    </div>
-                </div>
+            <SeloGallery selos={viewedUser.selos} />
+
+            <ProfileScorecard scores={viewedUser.scores} levels={viewedUser.levels} />
             </div>
 
             {/* Card de Competições Criadas */}

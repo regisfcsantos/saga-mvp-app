@@ -1,0 +1,72 @@
+/* client/src/components/ProfileScorecard.css */
+
+.scorecard-container {
+    background-color: #fff;
+    border-radius: 20px;
+    padding: 15px 20px;
+    margin-top: 20px;
+    border: 1px solid #f0f0f0;
+}
+
+.scorecard-container h3 {
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+}
+
+.score-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    gap: 15px;
+}
+
+.competencia-nome {
+    font-weight: 600;
+    color: #555;
+    width: 80px; /* Largura fixa para alinhar os nomes */
+    text-align: right;
+    text-transform: capitalize;
+}
+
+.score-bar-container {
+    flex-grow: 1; /* Faz a barra ocupar o espaço restante */
+    height: 10px;
+    background-color: #e9ecef;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.score-bar {
+    height: 100%;
+    background-color: #007bff; /* Azul padrão */
+    border-radius: 5px;
+    transition: width 0.5s ease-in-out;
+}
+
+.score-valor {
+    font-weight: 700;
+    font-size: 14px;
+    width: 40px; /* Largura fixa para alinhar os números */
+    text-align: left;
+}
+
+.level-badge {
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    color: white;
+    text-transform: uppercase;
+    text-align: center;
+    min-width: 60px;
+}
+
+/* Cores específicas para cada nível */
+.level-iniciante { background-color: #777; }
+.level-scale { background-color: #007bff; }
+.level-intermediário { background-color: #28a745; }
+.level-rx { background-color: #8a2be2; } /* Roxo */
+.level-elite { background: linear-gradient(45deg, #d4af37, #b48811); } /* Dourado */

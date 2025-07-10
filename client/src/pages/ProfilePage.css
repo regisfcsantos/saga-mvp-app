@@ -372,3 +372,71 @@
 
     /* --- FIM DA MUDANÇA --- */
 }
+
+/* ===== ESTILOS PARA GALERIA DE SELOS (ADICIONAR AO FINAL) ===== */
+
+.selo-gallery-container {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.selo-gallery-container h4 {
+    text-align: center;
+    font-size: 14px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 15px 0;
+}
+
+.selo-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+}
+
+.selo-item {
+    position: relative;
+    cursor: pointer;
+}
+
+.selo-icon {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.selo-item:hover .selo-icon {
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* Tooltip com o nome do desafio */
+.selo-item .tooltip-text {
+    visibility: hidden;
+    width: 160px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 110%; /* Posiciona acima do ícone */
+    left: 50%;
+    margin-left: -80px; /* Metade da largura para centralizar */
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.selo-item:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}

@@ -1,5 +1,5 @@
 // client/src/App.js
-import React, { useState } from 'react'; // React é sempre necessário para JSX
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import Navbar from './components/Navbar';
@@ -12,21 +12,21 @@ import ProfilePage from './pages/ProfilePage';
 import EditProfilePage from './pages/EditProfilePage';
 import AdminBoxRequestsPage from './pages/AdminBoxRequestsPage';
 import CreateCompetitionPage from './pages/CreateCompetitionPage';
-import CompetitionDetailPage from './pages/CompetitionDetailPage';
+import EventDetailPage from './pages/EventDetailPage'; // <<--- MUDANÇA: Importa o novo nome
+import DesafiosPage from './pages/DesafiosPage';   // <<--- MUDANÇA: Importa a nova página
 import InscriptionManagementPage from './pages/InscriptionManagementPage';
 import AnalyzeSubmissionsPage from './pages/AnalyzeSubmissionsPage';
 import ContactPage from './pages/ContactPage';
-import BottomNav from './components/BottomNav'; // Importe o novo componente
+import BottomNav from './components/BottomNav';
 import { useAuth } from './contexts/AuthContext';
-import UserSearchPage from './pages/UserSearchPage'; // <<--- Importe
+import UserSearchPage from './pages/UserSearchPage';
 import NotificationsPage from './pages/NotificationsPage';
 import CreditsPage from './pages/CreditsPage';
 
 function App() {
   const { currentUser } = useAuth();
-  const [isSidenavOpen, setIsSidenavOpen] = useState(false); // Estado para controlar o menu
+  const [isSidenavOpen, setIsSidenavOpen] = useState(false);
 
-  // Função para abrir/fechar o menu
   const toggleSidenav = () => {
     setIsSidenavOpen(!isSidenavOpen);
   };
@@ -34,88 +34,84 @@ function App() {
   return (
     <Router>
       <Navbar onBurgerClick={toggleSidenav} />
-
-      {/* Passa o estado e a função de fechar para o Sidenav */}
       <Sidenav isOpen={isSidenavOpen} onClose={toggleSidenav} />
 
       <main className="page-content">
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route 
-            path="/perfil/:username?" // <<--- O '?' torna o parâmetro opcional
-            element={
-              <ProtectedRoute> {/* Continua protegida para garantir que você esteja logado para ver seu próprio perfil */}
-                <ProfilePage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/editar-perfil"
-            element={
-              <ProtectedRoute>
-                <EditProfilePage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/admin/aprovar-boxes" 
-            element={
-              <AdminRoute>
-                <AdminBoxRequestsPage />
-              </AdminRoute>
-            } 
-          />
-          <Route 
-            path="/criar-competicao" 
-            element={
-              <ProtectedRoute>
-                <CreateCompetitionPage />
-              </ProtectedRoute>
-            } 
-          />
-          {/* <<--- NOVA ROTA PARA EDIÇÃO ---<<< */}
-          <Route 
-            path="/editar-competicao/:id" 
-            element={
-              <ProtectedRoute>
-                <CreateCompetitionPage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route
-            path="/competicoes/:id"
-            element={<CompetitionDetailPage />
-            }
-          />
-        <Route 
-          path="/competicoes/:competitionId/gerenciar-inscricoes"
-          element={
-              <ProtectedRoute> {/* Garante que só usuários logados acessem */}
-                  <InscriptionManagementPage /> {/* O próprio componente verifica se é o criador/admin */}
-              </ProtectedRoute>
-          }
-        />
-        <Route 
-          path="/competicoes/:competitionId/analisar-envios" // <-- Nova rota
-          element={
-              <ProtectedRoute> {/* Garante que só usuários logados acessem */}
-                  <AnalyzeSubmissionsPage />
-              </ProtectedRoute>
-          }
-        />
-        
-        <Route path="/creditos" element={<CreditsPage />} />
-
-        <Route path="/buscar-usuarios" element={<UserSearchPage />} />
-          <Route 
-            path="/notificacoes" 
-            element={
-              <ProtectedRoute>
-                <NotificationsPage />
-              </ProtectedRoute>
-            }
-          />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/desafios" element={<DesafiosPage />} /> {/* <<--- MUDANÇA: Nova rota para desafios */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route 
+              path="/perfil/:username?"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/editar-perfil"
+              element={
+                <ProtectedRoute>
+                  <EditProfilePage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/aprovar-boxes" 
+              element={
+                <AdminRoute>
+                  <AdminBoxRequestsPage />
+                </AdminRoute>
+              } 
+            />
+            <Route 
+              path="/criar-competicao" 
+              element={
+                <ProtectedRoute>
+                  <CreateCompetitionPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/editar-competicao/:id" 
+              element={
+                <ProtectedRoute>
+                  <CreateCompetitionPage />
+                </ProtectedRoute>
+              } 
+            />
+            {/* <<--- MUDANÇA: As rotas de detalhe agora usam o novo componente flexível ---<<< */}
+            <Route path="/competicoes/:id" element={<EventDetailPage />} />
+            <Route path="/desafios/:id" element={<EventDetailPage />} />
+            
+            <Route 
+              path="/competicoes/:competitionId/gerenciar-inscricoes"
+              element={
+                  <ProtectedRoute>
+                      <InscriptionManagementPage />
+                  </ProtectedRoute>
+              }
+            />
+            <Route 
+              path="/competicoes/:competitionId/analisar-envios"
+              element={
+                  <ProtectedRoute>
+                      <AnalyzeSubmissionsPage />
+                  </ProtectedRoute>
+              }
+            />
+            
+            <Route path="/creditos" element={<CreditsPage />} />
+            <Route path="/buscar-usuarios" element={<UserSearchPage />} />
+            <Route 
+              path="/notificacoes" 
+              element={
+                <ProtectedRoute>
+                  <NotificationsPage />
+                </ProtectedRoute>
+              }
+            />
         </Routes>
       </main>
       

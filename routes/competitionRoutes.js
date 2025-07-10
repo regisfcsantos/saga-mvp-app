@@ -27,8 +27,8 @@ router.post('/', ensureAuthenticated, ensureRole(['box', 'admin']), async (req, 
         const newCompetition = await Competition.create(competitionData);
         res.status(201).json(newCompetition);
     } catch (err) {
-        console.error("Erro ao criar competição:", err);
-        res.status(500).json({ message: "Erro interno ao criar a competição." });
+        console.error("Erro ao criar evento:", err);
+        res.status(500).json({ message: "Erro interno ao criar o evento." });
     }
 });
 
@@ -196,6 +196,17 @@ router.get('/:id/ranking', async (req, res) => {
     } catch (err) {
         console.error("Erro ao buscar ranking da competição:", err);
         res.status(500).json({ message: "Erro interno ao buscar o ranking." });
+    }
+});
+
+const Category = require('../models/categoryModel');
+router.get('/utils/categories', async (req, res) => {
+    try {
+        const categories = await Category.findAll();
+        res.json(categories);
+    } catch (err) {
+        console.error("Erro ao buscar categorias:", err);
+        res.status(500).json({ message: "Erro interno ao buscar categorias." });
     }
 });
 

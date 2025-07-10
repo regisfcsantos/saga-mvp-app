@@ -4,9 +4,15 @@ const db = require('../config/db'); // Importa a configuração da sua conexão 
 const User = {
     // Encontra um usuário pelo ID
     findById: async (id) => {
-        const query = 'SELECT * FROM users WHERE id = $1';
-        const { rows } = await db.query(query, [id]);
-        return rows[0];
+        const query = `
+            SELECT u.*,
+                (SELECT json_agg(...) FROM user_selos ... WHERE us.user_id = u.id) as selos,
+                (SELECT json_agg(...) FROM inscriptions ... WHERE i.athlete_id = u.id) as inscriptions,
+                (SELECT json_agg(...) FROM competitions ... WHERE c.creator_id = u.id) as created_competitions
+            FROM users u
+            WHERE u.id = $1;
+        `;
+        // ...
     },
 
     // Encontra um usuário pelo email
@@ -25,8 +31,28 @@ const User = {
 
     // Encontra um usuário pelo username (para perfis públicos)
     findByUsername: async (username) => {
-        // Seleciona apenas os campos que podem ser públicos ou são necessários para a lógica de perfil
-        const query = 'SELECT * FROM users WHERE username = $1';
+        // Esta query agora usa LEFT JOIN e agregação JSON para buscar todos os selos do usuário de uma só vez
+        const query = `
+            SELECT 
+                u.*,
+                -- Agrega todos os selos encontrados em um array de objetos JSON chamado 'selos'
+                (
+                    SELECT json_agg(json_build_object(
+                        'challenge_id', c.id,
+                        'challenge_name', c.name,
+                        'selo_icon_url', c.logo_image_url,
+                        'achieved_at', us.achieved_at
+                    ))
+                    FROM user_selos us
+                    JOIN competitions c ON us.challenge_id = c.id
+                    WHERE us.user_id = u.id
+                ) as selos,
+                -- <<--- COLOQUEI AQUI TAMBÉM A BUSCA DAS LISTAS QUE VOCÊ JÁ TINHA ---<<<
+                (SELECT json_agg(i.*) FROM inscriptions i WHERE i.athlete_id = u.id) as inscriptions,
+                (SELECT json_agg(c.*) FROM competitions c WHERE c.creator_id = u.id) as created_competitions
+            FROM users u
+            WHERE u.username = $1;
+        `;
         const { rows } = await db.query(query, [username]);
         return rows[0];
     },
@@ -34,9 +60,9 @@ const User = {
     // Cria um novo usuário (usado pelo Passport.js durante o cadastro social)
     create: async ({ username, email, profile_photo_url, social_provider, social_id, role = 'atleta' }) => {
         const query = `
-            INSERT INTO users (username, email, profile_photo_url, social_provider, social_id, role)
-            VALUES ($1, $2, $3, $4, $5, $6)
-            RETURNING *; 
+            INSERT INTO users (username, email, profile_photo_url, social_provider, social_id, role, scores, levels, selos)
+        VALUES ($1, $2, $3, $4, $5, $6, '{}'::jsonb, '{}'::jsonb, ARRAY[]::text[])
+        RETURNING * 
         `;
         // Retorna todos os campos do usuário recém-criado
         const params = [username, email, profile_photo_url, social_provider, social_id, role];
@@ -80,6 +106,23 @@ const User = {
             console.error('Erro no model ao atualizar perfil:', error);
             // Re-lança o erro para que a camada de Rota (userRoutes) possa tratá-lo
             // (por exemplo, para pegar o erro de username duplicado)
+            throw error;
+        }
+    },
+
+    updateScoresAndLevels: async (userId, { scores, levels }) => {
+        const query = `
+            UPDATE users
+            SET scores = $1, levels = $2, updated_at = CURRENT_TIMESTAMP
+            WHERE id = $3
+            RETURNING id, scores, levels;
+        `;
+        const values = [JSON.stringify(scores), JSON.stringify(levels), userId];
+        try {
+            const { rows } = await db.query(query, values);
+            return rows[0];
+        } catch (error) {
+            console.error('Erro no model ao atualizar scores e levels:', error);
             throw error;
         }
     },
