@@ -4,16 +4,46 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import VideoSubmissionForm from './VideoSubmissionForm';
 import './CompetitionActionPanel.css';
 
-const CompetitionActionPanel = ({ competition, userInscription, onInscription }) => {
+const CompetitionActionPanel = ({ competition, userInscription, onInscription, currentUser }) => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const handleLoginRedirect = () => {
-        alert("Você precisa fazer login para se inscrever.");
-        navigate('/login', { state: { from: location } });
-    };
+    if (!currentUser) {
+        let statusText = '';
+        if (competition.type === 'challenge') {
+            statusText = 'Faça login para participar do desafio.';
+        } else {
+            // Lógica para determinar o período da competição
+            const now = new Date();
+            const inscriptionStart = new Date(competition.inscription_start_date);
+            const inscriptionEnd = new Date(competition.inscription_end_date);
+            const submissionEnd = new Date(competition.submission_end_date);
 
-    // Cenário 1: Usuário não está inscrito E inscrições estão abertas
+            if (now < inscriptionStart) {
+                statusText = 'As inscrições abrirão em breve.';
+            } else if (now >= inscriptionStart && now <= inscriptionEnd) {
+                statusText = 'A competição está no período de inscrição.';
+            } else if (now > inscriptionEnd && now <= submissionEnd) {
+                statusText = 'A competição está no período de envio de provas.';
+            } else {
+                statusText = 'Este evento já foi encerrado.';
+            }
+        }
+
+        return (
+            <div className="action-panel logged-out-panel">
+                <h3>Participe!</h3>
+                <p>{statusText}</p>
+                <button
+                    onClick={() => navigate('/login', { state: { from: location } })}
+                    className="inscription-button"
+                >
+                    Faça login para saber mais
+                </button>
+            </div>
+        );
+    }
+
     if (!userInscription) {
         const isInscriptionOpen = (competition.type === 'challenge' && competition.status === 'publicada') ||
                                   (competition.type === 'competition' && competition.status === 'publicada' && new Date(competition.inscription_end_date) > new Date());

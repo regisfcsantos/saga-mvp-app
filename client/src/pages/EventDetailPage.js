@@ -134,6 +134,7 @@ const EventDetailPage = () => {
                                 competition={event}
                                 userInscription={userInscription}
                                 onInscription={handleInscription}
+                                currentUser={currentUser}
                             />
                             {inscriptionError && <p className="form-error-message">{inscriptionError}</p>}
                         </section>
