@@ -118,34 +118,49 @@ const ProfilePage = () => {
             {/* Card de Competições Criadas */}
             {viewedUser.role === 'box' && viewedUser.created_competitions?.length > 0 && (
                 <div className="profile-content-card">
-                    <h3>Competições Criadas</h3>
+                    <h3>Eventos Criados</h3>
                     <table className="my-competitions-table">
                         <thead>
                             <tr>
-                                <th>Competição</th>
+                                <th>Nome</th>
+                                <th>Tipo</th>
                                 <th>Status</th>
                                 <th style={{ textAlign: 'right' }}>Ações</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {viewedUser.created_competitions.map(comp => (
-                                <tr key={comp.id}>
-                                    <td data-label="Competição"><strong>{comp.name}</strong></td>
-                                    <td data-label="Status"><span className={`status-badge status-${comp.status}`}>{comp.status.replace('_', ' ')}</span></td>
-                                    <td data-label="Ações">
-                                        <div className="competition-item-actions">
-                                            <Link to={`/competicoes/${comp.id}`} className="action-button primary">Ver</Link>
-                                            {isMyProfile && (
-                                                <>
-                                                    <Link to={`/competicoes/${comp.id}/gerenciar-inscricoes`} className="action-button primary">Gerenciar</Link>
-                                                    <Link to={`/editar-competicao/${comp.id}`} className="action-button secondary">Editar</Link>
-                                                    <button onClick={() => handleDeleteCompetition(comp.id, comp.name)} className="action-button destructive">Excluir</button>
-                                                </>
-                                            )}
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
+                            {viewedUser.created_competitions.map(comp => {
+                                const isChallenge = comp.type === 'challenge';
+                                const viewLink = isChallenge ? `/desafios/${comp.id}` : `/competicoes/${comp.id}`;
+                                const editLink = isChallenge ? `/editar-desafio/${comp.id}` : `/editar-competicao/${comp.id}`; // Nota: talvez precise criar essa rota no App.js
+
+                                return (
+                                    <tr key={comp.id}>
+                                        <td data-label="Nome"><strong>{comp.name}</strong></td>
+                                        
+                                        <td data-label="Tipo">
+                                            <span className={`type-badge type-${comp.type}`}>
+                                                {isChallenge ? 'Desafio' : 'Competição'}
+                                            </span>
+                                        </td>
+
+                                        <td data-label="Status"><span className={`status-badge status-${comp.status}`}>{comp.status.replace('_', ' ')}</span></td>
+                                        <td data-label="Ações">
+                                            <div className="competition-item-actions">
+                                                <Link to={viewLink} className="action-button primary">Ver</Link>
+                                                {isMyProfile && (
+                                                    <>
+                                                        <Link to={`/competicoes/${comp.id}/gerenciar-inscricoes`} className="action-button primary">Gerenciar</Link>
+                                                        <Link to={`/competicoes/${comp.id}/analisar-envios`} className="action-button view-submissions">Analisar</Link>
+                                                        <Link to={`/editar-competicao/${comp.id}`} className="action-button secondary">Editar</Link>
+                                                        <button onClick={() => handleDeleteCompetition(comp.id, comp.name)} className="action-button destructive">Excluir</button>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
@@ -182,6 +197,34 @@ const ProfilePage = () => {
                                             <span>-</span>
                                         )}
                                     </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
+            {viewedUser.participationHistory?.length > 0 && (
+                <div className="profile-content-card">
+                    <h3>Histórico em Competições</h3>
+                    <table className="my-competitions-table">
+                       <thead>
+                            <tr>
+                                <th>Competição</th>
+                                <th>Sua Pontuação</th>
+                                <th>Sua Posição</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {viewedUser.participationHistory.map(hist => (
+                                <tr key={hist.competition_id}>
+                                    <td data-label="Competição">
+                                        <Link to={`/competicoes/${hist.competition_id}`} style={{fontWeight: 'bold', textDecoration: 'none'}}>
+                                            {hist.competition_name}
+                                        </Link>
+                                    </td>
+                                    <td data-label="Sua Pontuação">{hist.score}</td>
+                                    <td data-label="Sua Posição"><strong>{hist.rank}º</strong></td>
                                 </tr>
                             ))}
                         </tbody>

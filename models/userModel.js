@@ -117,7 +117,8 @@ const User = {
             WHERE id = $3
             RETURNING id, scores, levels;
         `;
-        const values = [JSON.stringify(scores), JSON.stringify(levels), userId];
+        // MUDANÇA: Removemos JSON.stringify(). Agora o driver do DB lida com isso.
+        const values = [scores, levels, userId];
         try {
             const { rows } = await db.query(query, values);
             return rows[0];

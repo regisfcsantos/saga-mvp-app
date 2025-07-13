@@ -81,6 +81,7 @@ const EditProfilePage = () => {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
+                        maxLength="25"
                     />
                      <small>Pode conter apenas letras, números e _. Mínimo 3 caracteres.</small>
                 </div>

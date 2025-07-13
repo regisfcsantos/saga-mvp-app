@@ -73,7 +73,7 @@ router.put('/:submissionId', ensureAuthenticated, ensureRole(['atleta']), async 
 // ROTA: Um Box/Admin avalia (dá nota) para uma submissão
 router.put('/:submissionId/grade', ensureAuthenticated, ensureRole(['box', 'admin']), async (req, res) => {
     const { submissionId } = req.params;
-    const { score, creator_feedback } = req.body;
+    const { score, creator_feedback, validation_status } = req.body;
     const evaluator_id = req.user.id;
 
     try {
@@ -95,46 +95,47 @@ router.put('/:submissionId/grade', ensureAuthenticated, ensureRole(['box', 'admi
         if (evaluator_id !== submission.creator_id && req.user.role !== 'admin') {
             return res.status(403).json({ message: "Você não tem permissão para avaliar esta submissão." });
         }
-        if (score === undefined || score === null || score < 0) {
-            return res.status(400).json({ message: "A nota fornecida é inválida." });
+
+        if (submission.type === 'challenge' && !['aprovado', 'reprovado'].includes(validation_status)) {
+            return res.status(400).json({ message: "Para um desafio, você deve selecionar 'Aprovado' ou 'Reprovado'." });
         }
+
+        // Para competições, o status pode ser nulo, mas a nota é essencial.
+        const finalScore = score !== undefined && score !== null ? score : 0;
         
+        // Passamos todos os dados para a função de avaliação
+        const gradedSubmission = await Submission.grade(submissionId, { 
+            score: finalScore, 
+            creator_feedback, 
+            validation_status: validation_status || 'avaliado' // Um status padrão para competições
+        });
+
         const athlete_id = submission.athlete_id;
         const competition_id = submission.competition_id;
-        
-        // 4. Atualizar a submissão com a nota e feedback
-        const gradedSubmission = await Submission.grade(submissionId, { score, creator_feedback });
 
         // 5. Dispara o recálculo do Score do Atleta (bloco original mantido)
-        scoreService.calculateScoresAndLevels(athlete_id)
+        scoreService.calculateScoresAndLevels(submission.athlete_id)
             .then(({ scores, levels }) => {
-                UserModel.updateScoresAndLevels(athlete_id, { scores, levels });
+                console.log(`[submissionRoutes] Dados recebidos do scoreService para salvar:`, { scores, levels });
+                UserModel.updateScoresAndLevels(submission.athlete_id, { scores, levels });
             })
-            .catch(error => {
-                console.error(`FALHA NO RECÁLCULO DE SCORE para o atleta ${athlete_id}:`, error);
-            });
+            .catch(error => console.error(`FALHA NO RECÁLCULO DE SCORE para o atleta ${submission.athlete_id}:`, error));
         
-        // --- INÍCIO DA NOVA MODIFICAÇÃO ---
-        // 6. VERIFICA SE DEVE CONCEDER UM SELO
-        // Se o evento for um 'challenge' e a nota for positiva (passou), concede o selo.
-        if (submission.type === 'challenge' && score > 0) {
-            Selo.create(athlete_id, competition_id)
+        if (submission.type === 'challenge' && validation_status === 'aprovado') {
+            Selo.create(submission.athlete_id, submission.competition_id)
                 .then(newSelo => {
-                    if (newSelo) { // ON CONFLICT retorna undefined, então só logamos se for novo
+                    if (newSelo) {
                         console.log(`Selo ${newSelo.challenge_id} concedido ao usuário ${newSelo.user_id}`);
                         // Aqui você também poderia criar uma notificação para o usuário sobre o novo selo
                     }
                 })
                 .catch(error => {
-                    console.error(`FALHA AO CONCEDER SELO para o atleta ${athlete_id}:`, error);
+                    console.error(`FALHA AO CONCEDER SELO para o atleta ${submission.athlete_id}:`, error);
                 });
         }
-        // --- FIM DA NOVA MODIFICAÇÃO ---
 
-
-        // Lógica de notificação original mantida
         try {
-            const competition = await Competition.findById(competition_id);
+            const competition = await Competition.findById(submission.competition_id);
             await notificationService.notifySubmissionGraded(
                 athlete_id,
                 competition.name,

@@ -70,6 +70,34 @@ const Inscription = {
         const query = 'DELETE FROM inscriptions WHERE id = $1 RETURNING *;';
         const { rows } = await db.query(query, [inscriptionId]);
         return rows[0]; // Retorna a inscrição que foi deletada
+    },
+    
+    findParticipationHistoryByAthleteId: async (athleteId) => {
+        const query = `
+            WITH RankedSubmissions AS (
+                -- Primeiro, criamos uma tabela temporária com o ranking de todos os participantes em todas as competições
+                SELECT
+                    s.id AS submission_id,
+                    i.athlete_id,
+                    i.competition_id,
+                    c.name AS competition_name,
+                    s.score,
+                    -- A mágica acontece aqui: A função RANK() calcula a posição de cada atleta
+                    -- dentro de cada competição (partition by), baseado na maior nota (order by)
+                    RANK() OVER (PARTITION BY i.competition_id ORDER BY s.score DESC) as rank
+                FROM submissions s
+                JOIN inscriptions i ON s.inscription_id = i.id
+                JOIN competitions c ON i.competition_id = c.id
+                WHERE s.score IS NOT NULL AND c.type = 'competition' -- Apenas para competições com nota
+            )
+            -- Agora, selecionamos apenas os resultados do atleta que nos interessa
+            SELECT *
+            FROM RankedSubmissions
+            WHERE athlete_id = $1
+            ORDER BY competition_name;
+        `;
+        const { rows } = await db.query(query, [athleteId]);
+        return rows;
     }
 };
 

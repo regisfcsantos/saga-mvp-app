@@ -18,44 +18,63 @@ router.post('/compete/:competitionId', ensureAuthenticated, ensureRole(['atleta'
         // 1. Verificar se a competição existe e se as inscrições estão abertas
         const competition = await Competition.findById(competitionId);
         if (!competition) {
-            return res.status(404).json({ message: "Competição não encontrada." });
-        }
-        if (competition.status !== 'publicada' || new Date(competition.inscription_end_date) < new Date()) {
-            return res.status(400).json({ message: "As inscrições para esta competição estão encerradas." });
+            return res.status(404).json({ message: "Evento não encontrado." });
         }
 
-        // 2. Verificar se o atleta já está inscrito
+        let initialStatus = '';
+        let successMessage = '';
+
+        if (competition.type === 'competition') {
+            if (competition.status !== 'publicada' || new Date(competition.inscription_end_date) < new Date()) {
+                return res.status(400).json({ message: "As inscrições para esta competição estão encerradas." });
+            }
+            initialStatus = 'pendente_pagamento';
+            successMessage = "Pré-inscrição realizada com sucesso! Siga as instruções de pagamento para confirmar sua vaga.";
+        } else if (competition.type === 'challenge') {
+            // Nova lógica para desafios
+            if (competition.status !== 'publicada') {
+                 return res.status(400).json({ message: "Este desafio não está disponível para inscrição." });
+            }
+            initialStatus = 'pendente_aprovacao';
+            successMessage = "Inscrição no desafio realizada! Aguarde a aprovação do criador para enviar sua prova.";
+        } else {
+             return res.status(400).json({ message: "Tipo de evento inválido." });
+        }
+
         const existingInscription = await Inscription.findByAthleteAndCompetition(athlete_id, competitionId);
         if (existingInscription) {
-            return res.status(400).json({ message: "Você já está inscrito nesta competição." });
+            return res.status(400).json({ message: "Você já está inscrito neste evento." });
         }
 
         // 3. Criar a nova inscrição
-        const newInscription = await Inscription.create({ athlete_id, competition_id: competitionId });
+        const newInscription = await Inscription.create({ 
+            athlete_id, 
+            competition_id: competitionId,
+            status: initialStatus // Passando o status correto
+        });
 
         // 4. Enviar a notificação para o criador da competição
         try {
             await notificationService.notifyNewInscription(
                 competition.creator_id,
-                athlete_username, // <<--- CORRIGIDO: Usa a variável correta
+                athlete_username,
                 competition.name,
                 competition.id
             );
         } catch (notificationError) {
             console.error("Falha ao criar notificação de nova inscrição:", notificationError);
-            // Não quebre a requisição principal por causa de uma notificação
         }
 
         // 5. Enviar UMA ÚNICA resposta de sucesso para o frontend
         res.status(201).json({ 
-            message: "Pré-inscrição realizada com sucesso! Siga as instruções de pagamento para confirmar sua vaga.",
+            message: successMessage,
             inscription: newInscription
         });
 
     } catch (err) {
         console.error("Erro ao criar inscrição:", err);
         if (err.constraint === 'unique_athlete_competition') {
-            return res.status(400).json({ message: "Você já está inscrito nesta competição." });
+            return res.status(400).json({ message: "Você já está inscrito neste evento." });
         }
         res.status(500).json({ message: "Erro interno ao processar sua inscrição." });
     }
@@ -192,6 +211,56 @@ router.delete('/:inscriptionId', ensureAuthenticated, ensureRole(['box', 'admin'
     } catch (err) {
         console.error("Erro ao cancelar inscrição:", err);
         res.status(500).json({ message: "Erro interno ao cancelar a inscrição." });
+    }
+});
+
+router.post('/:inscriptionId/reset-challenge', ensureAuthenticated, ensureRole(['atleta']), async (req, res) => {
+    const { inscriptionId } = req.params;
+    const athlete_id = req.user.id;
+
+    try {
+        // 1. Buscar a inscrição e garantir que pertence ao atleta e é de um desafio
+        const inscriptionResult = await db.query(
+            `SELECT i.*, c.type 
+             FROM inscriptions i
+             JOIN competitions c ON i.competition_id = c.id
+             WHERE i.id = $1`, [inscriptionId]
+        );
+
+        if (inscriptionResult.rows.length === 0) {
+            return res.status(404).json({ message: "Inscrição não encontrada." });
+        }
+        const inscription = inscriptionResult.rows[0];
+
+        if (inscription.athlete_id !== athlete_id) {
+            return res.status(403).json({ message: "Você não tem permissão para modificar esta inscrição." });
+        }
+        if (inscription.type !== 'challenge') {
+            return res.status(400).json({ message: "Esta funcionalidade está disponível apenas para desafios." });
+        }
+
+        // 2. Encontrar e deletar a submissão associada a esta inscrição
+        // Usamos um 'DELETE ... WHERE ... RETURNING id' para saber se algo foi deletado
+        const deleteSubResult = await db.query(
+            'DELETE FROM submissions WHERE inscription_id = $1 RETURNING id', 
+            [inscriptionId]
+        );
+
+        if (deleteSubResult.rowCount === 0) {
+            // Isso pode acontecer se o atleta tentar resetar sem nunca ter enviado uma prova, o que é ok.
+            console.log(`Atleta ${athlete_id} tentou resetar a inscrição ${inscriptionId} sem uma submissão existente. Permitindo...`);
+        }
+        
+        // 3. (Opcional, mas bom) Se o status da inscrição não for 'confirmada', atualize-o.
+        if (inscription.status !== 'confirmada') {
+            await Inscription.updateStatus(inscriptionId, 'confirmada');
+        }
+
+        res.json({ message: "Tudo pronto! Você já pode enviar sua nova prova." });
+
+    } catch (err) {
+        console.error("Erro ao resetar participação no desafio:", err);
+        res.status(500).json({ message: "Erro interno ao tentar resetar sua participação." });
     }
 });
 

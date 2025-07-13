@@ -81,6 +81,16 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+
+            <Route 
+              path="/editar-desafio/:id" 
+              element={
+                <ProtectedRoute>
+                  <CreateCompetitionPage />
+                </ProtectedRoute>
+              } 
+            />
+
             {/* <<--- MUDANÇA: As rotas de detalhe agora usam o novo componente flexível ---<<< */}
             <Route path="/competicoes/:id" element={<EventDetailPage />} />
             <Route path="/desafios/:id" element={<EventDetailPage />} />

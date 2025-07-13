@@ -1,7 +1,7 @@
 // client/src/components/CompetitionActionPanel.js
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import VideoSubmissionForm from './VideoSubmissionForm'; // <<--- Usaremos um formulário separado
+import VideoSubmissionForm from './VideoSubmissionForm';
 import './CompetitionActionPanel.css';
 
 const CompetitionActionPanel = ({ competition, userInscription, onInscription }) => {
@@ -15,7 +15,12 @@ const CompetitionActionPanel = ({ competition, userInscription, onInscription })
 
     // Cenário 1: Usuário não está inscrito E inscrições estão abertas
     if (!userInscription) {
-        const isInscriptionOpen = competition.status === 'publicada' && new Date(competition.inscription_end_date) > new Date();
+        const isInscriptionOpen = (competition.type === 'challenge' && competition.status === 'publicada') ||
+                                  (competition.type === 'competition' && competition.status === 'publicada' && new Date(competition.inscription_end_date) > new Date());
+        
+        const buttonText = competition.type === 'challenge' ? 'Inscrever-se no Desafio' : 
+                          isInscriptionOpen ? 'Inscreva-se Agora' : 'Inscrições Encerradas';
+
         return (
             <div className="action-panel">
                 <h3>Inscrição</h3>
@@ -28,16 +33,21 @@ const CompetitionActionPanel = ({ competition, userInscription, onInscription })
                     disabled={!isInscriptionOpen}
                     title={!isInscriptionOpen ? "Inscrições encerradas" : "Clique para se inscrever"}
                 >
-                    {isInscriptionOpen ? 'Inscreva-se Agora' : 'Inscrições Encerradas'}
+                    {buttonText}
                 </button>
             </div>
         );
     }
-    
-    // Cenário 2: Inscrição PENDENTE DE PAGAMENTO
-    // client/src/components/CompetitionActionPanel.js
 
-// ... (início do componente e outros cenários)
+    if (userInscription.status === 'pendente_aprovacao') {
+        return (
+            <div className="action-panel">
+                <h3>Solicitação Enviada</h3>
+                <p>Sua inscrição no desafio foi enviada e está aguardando a aprovação do criador.</p>
+                <p>Você será notificado assim que for aprovado.</p>
+            </div>
+        );
+    }
 
     // Cenário 2: Inscrição PENDENTE DE PAGAMENTO
     if (userInscription.status === 'pendente_pagamento') {
@@ -80,9 +90,10 @@ const CompetitionActionPanel = ({ competition, userInscription, onInscription })
 
     // Cenário 3: Inscrição CONFIRMADA
     if (userInscription.status === 'confirmada') {
-        const isSubmissionPeriodOpen = new Date() > new Date(competition.submission_start_date) && new Date() < new Date(competition.submission_end_date);
-        
-        if (isSubmissionPeriodOpen) {
+        const isSubmissionOpen = competition.type === 'challenge' || 
+                                 (new Date() > new Date(competition.submission_start_date) && new Date() < new Date(competition.submission_end_date));
+            
+        if (isSubmissionOpen) {
             // Se o período de envio estiver aberto, mostra o formulário
             return (
                 <div className="action-panel submission-panel">
@@ -96,7 +107,12 @@ const CompetitionActionPanel = ({ competition, userInscription, onInscription })
                 <div className="action-panel">
                     <h3>Inscrição Confirmada</h3>
                     <p>Sua participação está confirmada! O período para envio de provas não está ativo no momento.</p>
-                    <p><strong>Período de Envio:</strong> {new Date(competition.submission_start_date).toLocaleDateString('pt-BR')} até {new Date(competition.submission_end_date).toLocaleDateString('pt-BR')}</p>
+                    {competition.type === 'competition' && (
+                        <>
+                            <p>O período para envio de provas não está ativo no momento.</p>
+                            <p><strong>Período de Envio:</strong> {new Date(competition.submission_start_date).toLocaleDateString('pt-BR')} até {new Date(competition.submission_end_date).toLocaleDateString('pt-BR')}</p>
+                        </>
+                    )}
                 </div>
             );
         }
@@ -106,7 +122,7 @@ const CompetitionActionPanel = ({ competition, userInscription, onInscription })
     return (
         <div className="action-panel">
             <h3>Status da Inscrição</h3>
-            <p>Seu status atual nesta competição é: <strong>{userInscription.status}</strong>.</p>
+            <p>Seu status atual neste evento é: <strong>{userInscription.status.replace(/_/g, ' ')}</strong>.</p>
         </div>
     );
 };

@@ -89,15 +89,15 @@ const InscriptionManagementPage = () => {
                                     </span>
                                 </td>
                                 <td className="actions-cell" data-label="Ações">
-                                    {inscription.status === 'pendente_pagamento' && (
+                                    {(inscription.status === 'pendente_pagamento' || inscription.status === 'pendente_aprovacao') && (
                                         <button 
                                             onClick={() => handleConfirm(inscription.id)}
                                             className="action-button confirm"
                                         >
-                                            Confirmar
+                                            {inscription.status === 'pendente_aprovacao' ? 'Aprovar' : 'Confirmar Pag.'}
                                         </button>
                                     )}
-                                    {/* <<--- NOVO BOTÃO DE CANCELAMENTO ---<<< */}
+                                    
                                     <button
                                         onClick={() => handleCancel(inscription.id)}
                                         className="action-button cancel"

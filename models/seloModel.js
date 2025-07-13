@@ -34,7 +34,8 @@ const Selo = {
                 us.achieved_at,
                 c.id as challenge_id,
                 c.name as challenge_name,
-                c.logo_image_url as selo_icon_url -- Usaremos o logo do desafio como ícone do selo
+                -- MUDANÇA: Agora priorizamos a imagem da medalha.
+                COALESCE(c.medal_image_url, c.logo_image_url) as selo_icon_url
             FROM user_selos us
             JOIN competitions c ON us.challenge_id = c.id
             WHERE us.user_id = $1

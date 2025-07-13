@@ -3,6 +3,7 @@ const router = require('express').Router();
 const User = require('../models/userModel'); // Importa o modelo de usuário que acabamos de preencher
 const Inscription = require('../models/inscriptionModel');
 const Competition = require('../models/competitionModel');
+const Selo = require('../models/seloModel');
 const notificationService = require('../services/notificationService');
 const { ensureAuthenticated } = require('../middleware/authMiddleware'); // Importa o middleware para proteger rotas
 
@@ -143,7 +144,7 @@ router.get('/profile/:username', async (req, res) => {
     try {
         const user = await User.findByUsername(req.params.username);
 
-        console.log('--- BACKEND (PASSO 1) --- Usuário encontrado no DB:', user);
+        console.log(`[userRoutes] Dados do usuário ${req.params.username} lidos do banco:`, user);
         if (!user) {
             return res.status(404).json({ message: 'Usuário não encontrado.' });
         }
@@ -158,8 +159,12 @@ router.get('/profile/:username', async (req, res) => {
             role: user.role,
             is_box_approved: (user.role === 'box' ? user.is_box_approved : undefined),
             created_at: user.created_at,
+            scores: user.scores,
+            levels: user.levels,
             created_competitions: [],
-            inscriptions: []
+            inscriptions: [],
+            selos: [],
+            participationHistory: []
         };
 
         // Se o usuário for um Box aprovado, busca as competições que ele criou
@@ -170,7 +175,9 @@ router.get('/profile/:username', async (req, res) => {
         // Busca as competições em que o usuário se inscreveu
         publicProfile.inscriptions = await Inscription.findCompetitionsByAthleteId(user.id);
 
-        console.log('--- BACKEND (PASSO 2) --- Objeto enviado para o Frontend:', publicProfile);
+        publicProfile.participationHistory = await Inscription.findParticipationHistoryByAthleteId(user.id);
+
+        publicProfile.selos = await Selo.findByUserId(user.id);
 
         res.json(publicProfile);
     } catch (err) {

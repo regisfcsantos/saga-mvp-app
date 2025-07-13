@@ -9,19 +9,38 @@ const { ensureAuthenticated, ensureRole, ensureBoxApproved } = require('../middl
 // ACESSO: POST /api/competitions
 // Protegida: Apenas para usuários 'box' aprovados ou 'admin'
 router.post('/', ensureAuthenticated, ensureRole(['box', 'admin']), async (req, res) => {
-    // Se for um 'box', garantir que ele está aprovado (ensureBoxApproved faria isso, mas ensureRole já cobre se box está aprovado)
-    // Mas para ser explícito, podemos verificar req.user.is_box_approved se o role for 'box'
     if (req.user.role === 'box' && !req.user.is_box_approved) {
         return res.status(403).json({ message: 'Seu perfil de Box precisa ser aprovado para criar competições.' });
     }
 
-    const competitionData = { ...req.body, creator_id: req.user.id };
+    const competitionData = { 
+        ...req.body, 
+        type: req.body.type || 'competition',
+        creator_id: req.user.id 
+    };
 
     // Validação básica (pode ser expandida)
     if (!competitionData.name || !competitionData.description || !competitionData.rules) {
         return res.status(400).json({ message: 'Nome, descrição e regras são obrigatórios.' });
     }
     // Adicionar mais validações para datas, preço, etc.
+
+    if (competitionData.type === 'challenge') {
+        competitionData.inscription_start_date = null;
+        competitionData.inscription_end_date = null;
+        competitionData.submission_start_date = null;
+        competitionData.submission_end_date = null;
+        competitionData.results_date = null;
+        competitionData.price = 0; // Desafios podem ser sempre gratuitos
+        competitionData.awards_info = null;
+        competitionData.category = null;
+        // Limpar campos de pagamento também, se aplicável
+        competitionData.payment_method_name = null;
+        competitionData.payment_details = null;
+        competitionData.proof_of_payment_recipient = null;
+        competitionData.proof_of_payment_contact = null;
+        competitionData.payment_instructions_detailed = null;
+    }
 
     try {
         const newCompetition = await Competition.create(competitionData);
@@ -97,6 +116,15 @@ router.put('/:id', ensureAuthenticated, ensureRole(['box', 'admin']), async (req
             return res.status(403).json({ message: 'Seu perfil de Box precisa ser aprovado para editar competições.' });
         }
 
+        if (competitionData.type === 'challenge') {
+            competitionData.inscription_start_date = null;
+            competitionData.inscription_end_date = null;
+            competitionData.submission_start_date = null;
+            competitionData.submission_end_date = null;
+            competitionData.results_date = null;
+            competitionData.price = 0; 
+            competitionData.awards_info = null;
+        }
 
         const updatedCompetition = await Competition.update(id, competitionData);
         if (!updatedCompetition) { // Se o model.update retornar null por não ter campos válidos

@@ -12,7 +12,14 @@ require('./config/passport-setup'); // Executa o arquivo de configuração do Pa
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-app.use(cors());
+const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000';
+
+// Agora a variável CLIENT_URL existe e pode ser usada no cors.
+app.use(cors({
+    origin: CLIENT_URL,
+    credentials: true
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
