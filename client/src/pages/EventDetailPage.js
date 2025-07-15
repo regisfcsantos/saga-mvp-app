@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import CompetitionActionPanel from '../components/CompetitionActionPanel';
 import './CompetitionDetailPage.css';
+import './ProfilePage.css';
 
 // Renomeamos o componente para refletir sua nova função
 const EventDetailPage = () => {
@@ -107,11 +108,11 @@ const EventDetailPage = () => {
 
             {/* O link de gerenciamento continua funcionando como antes */}
             {currentUser && (currentUser.id === event.creator_id || currentUser.role === 'admin') && (
-                 <div style={{ padding: '15px 30px', backgroundColor: '#fff3cd', borderBottom: '1px solid #eee' }}>
-                    <Link to={`/competicoes/${id}/gerenciar-inscricoes`} style={{fontWeight: 'bold', textDecoration: 'none'}}>
-                        Gerenciar Inscrições
+                 <div style={{ padding: '15px 30px', backgroundColor: '#f7f7f7', borderBottom: '1px solid #eee', display: 'flex', gap: '10px' }}>
+                    <Link to={`/competicoes/${id}/gerenciar-inscricoes`} className="action-button primary">
+                        Gerenciar
                     </Link>
-                    <Link to={`/competicoes/${id}/analisar-envios`} style={{fontWeight: 'bold', textDecoration: 'none', marginLeft: '20px'}}>
+                    <Link to={`/competicoes/${id}/analisar-envios`} className="action-button secondary">
                         Analisar Envios
                     </Link>
                 </div>

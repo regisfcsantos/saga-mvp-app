@@ -55,18 +55,21 @@
 }
 
 .competition-card-status {
-    font-size: 13px;
-    color: #555;
+    display: inline-block; /* Permite aplicar padding */
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 20px; /* Cria o formato de "pílula" */
     margin-bottom: 15px;
-    font-weight: 500;
+    color: #fff; /* O texto será sempre branco */
 }
 
 .competition-card-status.open {
-    color: #4CAF50; /* Verde para inscrições abertas */
+    color: #28a745; /* Verde para inscrições abertas */
 }
 
 .competition-card-status.closed {
-    color: #FF5A5F; /* Vermelho para encerradas */
+    color: #dc3545; /* Vermelho para encerradas */
 }
  .competition-card-status.finished {
     color: #007bff; /* Azul para finalizada/resultados */

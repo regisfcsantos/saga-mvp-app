@@ -1,0 +1,39 @@
+/* client/src/pages/StaticPage.css */
+.static-page-container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 30px 40px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    line-height: 1.7;
+    color: #333;
+}
+
+.static-page-container h1 {
+    font-size: 2.2em;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+.static-page-container h3 {
+    font-size: 1.4em;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    color: #111;
+}
+
+.static-page-container p {
+    margin-bottom: 15px;
+}
+
+.static-page-container .last-updated {
+    color: #777;
+    font-size: 0.9em;
+    margin-bottom: 25px;
+}
+
+.static-page-container strong {
+    color: #000;
+}

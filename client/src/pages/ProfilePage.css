@@ -240,6 +240,14 @@
     background-color: #4a4a4f;
 }
 
+.action-button.view-submissions {
+    background-color: #615fff;
+}
+
+.action-button.view-submissions:hover {
+    background-color: #615fff;
+}
+
 /* Estilo do Botão Secundário (Ação de edição/suporte) */
 .action-button.secondary {
     background-color: #ddd;

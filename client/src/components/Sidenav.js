@@ -23,7 +23,6 @@ const Sidenav = ({ isOpen, onClose }) => {
 
                 <nav className="sidenav-links">
                     <Link to="/perfil" onClick={onClose}>Meu Perfil</Link>
-                    <Link to="/competicoes" onClick={onClose}>Competições</Link>
                     <Link to="/contato" onClick={onClose}>Contato</Link>
                     <Link to="/termos-de-servico" onClick={onClose}>Termos de Serviço</Link>
                     <Link to="/politica-de-privacidade" onClick={onClose}>Política de Privacidade</Link>

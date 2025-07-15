@@ -19,7 +19,7 @@ const ContactPage = () => {
                 entre em contato com nossa equipe de administração.
             </p>
             <div style={{marginTop: '30px', fontSize: '1.2em'}}>
-                <p><strong>Email para Contato:</strong> <a href="mailto:contato@saga.com">contato@saga.com</a></p>
+                <p><strong>Email para Contato:</strong> <a href="mailto:regisfcsantos@gmail.com">regisfcsantos@gmail.com</a></p>
                 {/* Você pode adicionar outros meios de contato aqui, como um formulário ou número de WhatsApp */}
             </div>
         </div>

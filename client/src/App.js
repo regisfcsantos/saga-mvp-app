@@ -25,6 +25,8 @@ import NotificationsPage from './pages/NotificationsPage';
 import CreditsPage from './pages/CreditsPage';
 import InvitationPage from './pages/InvitationPage';
 import AdminInviteGeneratorPage from './pages/AdminInviteGeneratorPage';
+import TermosDeServicoPage from './pages/TermosDeServicoPage';
+import PoliticaDePrivacidadePage from './pages/PoliticaDePrivacidadePage';
 
 function App() {
   const [isSidenavOpen, setIsSidenavOpen] = useState(false);
@@ -142,6 +144,10 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/contato" element={<ContactPage />} />
+            <Route path="/termos-de-servico" element={<TermosDeServicoPage />} />
+            <Route path="/politica-de-privacidade" element={<PoliticaDePrivacidadePage />} />
+
         </Routes>
       </main>
       
