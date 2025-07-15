@@ -1,12 +1,12 @@
 // SAGA_MVP/routes/adminRoutes.js
 const router = require('express').Router();
+const crypto = require('crypto');
+const db = require('../config/db');
 const User = require('../models/userModel');
 const notificationService = require('../services/notificationService');
-// Precisaremos do middleware para garantir que apenas o admin acesse estas rotas
 const { ensureAuthenticated, ensureRole } = require('../middleware/authMiddleware');
 
 // Middleware para garantir que o usuário é admin para todas as rotas neste arquivo
-// ensureRole(['admin']) verifica se req.user.role é 'admin'
 router.use(ensureAuthenticated, ensureRole(['admin'])); 
 
 // ROTA: Listar todas as solicitações pendentes de Box
@@ -64,6 +64,30 @@ router.put('/reject-box/:userId', async (req, res) => {
     } catch (err) {
         console.error("Erro ao rejeitar solicitação de Box:", err);
         res.status(500).json({ message: "Erro ao rejeitar solicitação de Box." });
+    }
+});
+
+router.post('/invites/generate', async (req, res) => {
+    const adminId = req.user.id;
+    // Gera um código único e mais curto. Ex: "SAGA-a3f9b1"
+    const newCode = `SAGA-${crypto.randomBytes(3).toString('hex')}`.toUpperCase();
+    
+    try {
+        const result = await db.query(
+            'INSERT INTO invitations (code, created_by) VALUES ($1, $2) RETURNING code',
+            [newCode, adminId]
+        );
+        res.status(201).json({ 
+            message: 'Código de convite gerado com sucesso!', 
+            inviteCode: result.rows[0].code 
+        });
+    } catch (error) {
+        // Trata o caso raro de colisão de código
+        if (error.code === '23505') { // Código de erro do PostgreSQL para violação de unique constraint
+             return res.status(500).json({ message: 'Ocorreu um erro raro ao gerar o código. Por favor, tente novamente.' });
+        }
+        console.error("Erro ao gerar código de convite:", error);
+        res.status(500).json({ message: 'Erro interno do servidor.' });
     }
 });
 

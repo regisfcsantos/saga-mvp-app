@@ -2,14 +2,14 @@
 const router = require('express').Router();
 const Inscription = require('../models/inscriptionModel');
 const Competition = require('../models/competitionModel'); // Para verificar datas
-const { ensureAuthenticated, ensureRole } = require('../middleware/authMiddleware');
+const { ensureAuthenticated, ensureRole, ensureAccountActive } = require('../middleware/authMiddleware');
 const db = require('../config/db');
 const notificationService = require('../services/notificationService'); // <<--- IMPORTE O SERVIÇO
 
 
 // ROTA: Um atleta se inscreve em uma competição
 // ACESSO: POST /api/inscriptions/compete/:competitionId
-router.post('/compete/:competitionId', ensureAuthenticated, ensureRole(['atleta']), async (req, res) => {
+router.post('/compete/:competitionId', ensureAuthenticated, ensureAccountActive, ensureRole(['atleta']), async (req, res) => {
     const { competitionId } = req.params;
     const athlete_id = req.user.id; // ID do usuário logado
     const athlete_username = req.user.username; // Username do usuário logado
@@ -214,7 +214,7 @@ router.delete('/:inscriptionId', ensureAuthenticated, ensureRole(['box', 'admin'
     }
 });
 
-router.post('/:inscriptionId/reset-challenge', ensureAuthenticated, ensureRole(['atleta']), async (req, res) => {
+router.post('/:inscriptionId/reset-challenge', ensureAuthenticated, ensureAccountActive, ensureRole(['atleta']), async (req, res) => {
     const { inscriptionId } = req.params;
     const athlete_id = req.user.id;
 

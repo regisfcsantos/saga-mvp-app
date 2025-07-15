@@ -14,11 +14,17 @@ const ProtectedRoute = ({ children }) => {
 
     if (!currentUser) {
         // Usuário não está logado, redireciona para a página de login
-        // Passa a localização atual para que possamos redirecionar de volta após o login
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
-    // Usuário está logado, renderiza o componente filho (a página protegida)
+    const isPending = currentUser.status === 'pending_invitation';
+    const isOnInvitationPage = location.pathname === '/validar-convite';
+
+    // Se o usuário está pendente e tenta acessar qualquer rota protegida
+    if (isPending && !isOnInvitationPage) {
+        return <Navigate to="/validar-convite" replace />;
+    }
+
     return children;
 };
 

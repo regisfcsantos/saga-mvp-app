@@ -1,0 +1,82 @@
+/* client/src/pages/InvitationPage.css */
+.invitation-page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    padding: 20px;
+    background-color: #f0f2f5;
+}
+
+.invitation-card {
+    background-color: #ffffff;
+    padding: 30px 40px;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 450px;
+    width: 100%;
+}
+
+.invitation-card h2 {
+    font-size: 2em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.invitation-card p {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.invitation-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.invitation-input {
+    width: 100%;
+    padding: 14px 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.invitation-input::placeholder {
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+.invitation-button {
+    padding: 14px 20px;
+    background-color: #00438a;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.invitation-button:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+.invitation-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.invitation-error {
+    color: #c92a2a;
+    background-color: #ffe3e3;
+    border: 1px solid #c92a2a;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 10px;
+}

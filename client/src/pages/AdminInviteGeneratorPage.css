@@ -1,0 +1,18 @@
+.generated-code-container {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border: 1px dashed #ccc;
+    border-radius: 8px;
+}
+
+.code-display {
+    font-size: 1.5em;
+    font-family: 'Courier New', Courier, monospace;
+    letter-spacing: 2px;
+    cursor: pointer;
+    padding: 10px;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    margin-top: 10px;
+}

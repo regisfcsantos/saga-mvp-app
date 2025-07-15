@@ -82,8 +82,8 @@ async (accessToken, refreshToken, profile, done) => {
                 // 3. Usuário não encontrado, criar um novo
                 const defaultUsername = displayName.replace(/\s+/g, '').toLowerCase() + Math.floor(Math.random() * 10000);
                 const newUserResult = await db.query(
-                    'INSERT INTO users (username, email, profile_photo_url, social_provider, social_id, role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-                    [defaultUsername, email, photoUrl, 'google', googleId, 'atleta'] // Novos usuários são 'atleta' por padrão
+                    'INSERT INTO users (username, email, profile_photo_url, social_provider, social_id, role, status) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+                    [defaultUsername, email, photoUrl, 'google', googleId, 'atleta', 'pending_invitation'] // Novos usuários são 'atleta' por padrão
                 );
                 return done(null, newUserResult.rows[0]);
             }
@@ -150,8 +150,8 @@ async (accessToken, refreshToken, profile, done) => {
                 // 3. Criar novo usuário
                 const defaultUsername = displayName.replace(/\s+/g, '').toLowerCase() + Math.floor(Math.random() * 10000);
                 const newUserResult = await db.query(
-                    'INSERT INTO users (username, email, profile_photo_url, social_provider, social_id, role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-                    [defaultUsername, email, photoUrl, 'facebook', facebookId, 'atleta']
+                    'INSERT INTO users (username, email, profile_photo_url, social_provider, social_id, role, status) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+                    [defaultUsername, email, photoUrl, 'facebook', facebookId, 'atleta', 'pending_invitation']
                 );
                 return done(null, newUserResult.rows[0]);
             }

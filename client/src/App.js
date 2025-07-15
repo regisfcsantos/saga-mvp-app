@@ -6,6 +6,8 @@ import Navbar from './components/Navbar';
 import Sidenav from './components/Sidenav';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
+
+import AuthStatusHandler from './components/AuthStatusHandler';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import ProfilePage from './pages/ProfilePage';
@@ -18,13 +20,13 @@ import InscriptionManagementPage from './pages/InscriptionManagementPage';
 import AnalyzeSubmissionsPage from './pages/AnalyzeSubmissionsPage';
 import ContactPage from './pages/ContactPage';
 import BottomNav from './components/BottomNav';
-import { useAuth } from './contexts/AuthContext';
 import UserSearchPage from './pages/UserSearchPage';
 import NotificationsPage from './pages/NotificationsPage';
 import CreditsPage from './pages/CreditsPage';
+import InvitationPage from './pages/InvitationPage';
+import AdminInviteGeneratorPage from './pages/AdminInviteGeneratorPage';
 
 function App() {
-  const { currentUser } = useAuth();
   const [isSidenavOpen, setIsSidenavOpen] = useState(false);
 
   const toggleSidenav = () => {
@@ -38,6 +40,24 @@ function App() {
 
       <main className="page-content">
         <Routes>
+            <Route 
+              path="/validar-convite" 
+              element={
+                <ProtectedRoute>
+                  <InvitationPage />
+                </ProtectedRoute>
+              } 
+            />
+
+            <Route 
+              path="/admin/gerar-convite" 
+              element={
+                <AdminRoute>
+                  <AdminInviteGeneratorPage />
+                </AdminRoute>
+              } 
+            />
+
             <Route path="/" element={<HomePage />} />
             <Route path="/desafios" element={<DesafiosPage />} /> {/* <<--- MUDANÇA: Nova rota para desafios */}
             <Route path="/login" element={<LoginPage />} />

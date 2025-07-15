@@ -249,7 +249,10 @@ const ProfilePage = () => {
                             </Link>
                         )}
                          {currentUser.role === 'admin' && (
-                            <Link to="/admin/aprovar-boxes" className="action-button manage">Painel Admin</Link>
+                            <>  
+                                <Link to="/admin/aprovar-boxes" className="action-button manage">Painel Admin</Link>
+                                <Link to="/admin/gerar-convite" className="action-button" style={{backgroundColor: '#006317'}}>Gerar Convite</Link>
+                            </>
                         )}
                         {requestBoxError && <p style={{color: 'red', textAlign:'center'}}>{requestBoxError}</p>}
                         {requestBoxSuccess && <p style={{color: 'green', textAlign:'center'}}>{requestBoxSuccess}</p>}

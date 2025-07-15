@@ -34,5 +34,13 @@ module.exports = {
              return res.status(401).json({ message: 'Autenticação necessária.' });
         }
         res.status(403).json({ message: 'Acesso negado.' });
+    },
+
+    ensureAccountActive: (req, res, next) => {
+        if (req.user && req.user.status === 'active') {
+            return next();
+        }
+        
+        res.status(403).json({ message: 'Sua conta precisa ser ativada com um código de convite para realizar esta ação.' });
     }
 };
